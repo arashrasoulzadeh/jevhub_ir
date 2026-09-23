@@ -1,0 +1,8 @@
+.git
+.claude
+.build-scripts
+__pycache__
+*.pyc
+.DS_Store
+dev-server.py
+README.md

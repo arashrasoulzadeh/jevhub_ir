@@ -1,0 +1,8 @@
+services:
+  jevhub:
+    build: .
+    image: jevhub:latest
+    container_name: jevhub
+    ports:
+      - "8080:80"
+    restart: unless-stopped

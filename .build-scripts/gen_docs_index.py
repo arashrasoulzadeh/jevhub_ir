@@ -4,21 +4,17 @@ Reads groups/descriptions from the already-built docs/*.html pages (run
 rebuild_docs.py first if those are stale)."""
 import re
 import json
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from env import SITE_URL  # از .env در ریشه‌ی پروژه خوانده می‌شود
 
 ROOT = Path("/Users/arashrasoulzadeh/Documents/projects/jevhub_ir")
 OUT = ROOT / "docs"
-SITE_URL = "https://meetarash.ir/jevhub_ir"
 
-GA_SNIPPET = '''  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QV7SENV5V1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-QV7SENV5V1');
-  </script>'''
+# نکته: تگ GA دیگر این‌جا inject نمی‌شود — assets/js/main.js آن را در زمان
+# اجرا از window.JEV_SITE.gaMeasurementId می‌سازد (بخش initAnalytics).
 
 DOCS_UPDATED = re.search(r'docsUpdated:\s*"([^"]+)"', (ROOT / "assets/js/config.js").read_text(encoding="utf-8")).group(1)
 
@@ -60,7 +56,6 @@ PAGE = f'''<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8">
-{GA_SNIPPET}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>مستندات Jev | جِو هاب</title>
   <meta name="description" content="{meta_desc}">

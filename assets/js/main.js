@@ -703,6 +703,22 @@
     els.forEach((e) => io.observe(e));
   }
 
+  /* ---------- Google Analytics (id comes from assets/js/config.js,
+     itself generated from .env — never hardcoded in page HTML) ---------- */
+  function initAnalytics() {
+    const id = (window.JEV_SITE || {}).gaMeasurementId;
+    if (!id) return;
+    const s = document.createElement("script");
+    s.async = true;
+    s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(id);
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    gtag("js", new Date());
+    gtag("config", id);
+  }
+  initAnalytics();
+
   /* ---------- Public API (used by examples page) ---------- */
   window.JevUI = { fa, faDate, codeBlock, codeGroup, highlight, initReveal, initCode, esc };
 

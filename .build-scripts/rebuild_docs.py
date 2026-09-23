@@ -8,22 +8,20 @@ number of times — each run's output becomes the next run's input.
 """
 import re
 import json
+import sys
 import html as htmlmod
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from env import SITE_URL  # از .env در ریشه‌ی پروژه خوانده می‌شود
+
 ROOT = Path("/Users/arashrasoulzadeh/Documents/projects/jevhub_ir")
 OUT = ROOT / "docs"
-SITE_URL = "https://meetarash.ir/jevhub_ir"  # پیش از دیپلوی جایگزین کنید
 
-GA_SNIPPET = '''  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QV7SENV5V1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-QV7SENV5V1');
-  </script>'''
+# نکته: تگ Google Analytics دیگر این‌جا inject نمی‌شود — assets/js/main.js
+# آن را در زمان اجرا از window.JEV_SITE.gaMeasurementId (تولیدشده توسط
+# gen_config.py از .env) می‌سازد. هر صفحه فقط باید config.js و main.js را
+# لود کند، که در PAGE پایین همین کار انجام می‌شود.
 
 DOCS_UPDATED = re.search(r'docsUpdated:\s*"([^"]+)"', (ROOT / "assets/js/config.js").read_text(encoding="utf-8")).group(1)
 
@@ -166,7 +164,6 @@ PAGE = '''<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="utf-8">
-{ga}
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title} | مستندات Jev | جِو هاب</title>
   <meta name="description" content="{desc}">
@@ -267,7 +264,6 @@ for i, slug in enumerate(order):
     page = PAGE.format(
         title=title_text,
         desc=desc_text.replace('"', "&quot;"),
-        ga=GA_SNIPPET,
         url=f"{SITE_URL}/docs/{slug}.html",
         title_json=json.dumps(title_text, ensure_ascii=False),
         desc_json=json.dumps(desc_text, ensure_ascii=False),
