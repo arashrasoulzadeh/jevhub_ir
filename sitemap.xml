@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- پیش از دیپلوی: your-domain.example را با دامنه‌ی واقعی سایت جایگزین کنید -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://your-domain.example/index.html</loc></url>
+  <url><loc>https://your-domain.example/examples.html</loc></url>
+  <url><loc>https://your-domain.example/docs/advanced.html</loc></url>
+  <url><loc>https://your-domain.example/docs/agent-skill.html</loc></url>
+  <url><loc>https://your-domain.example/docs/ai-primer.html</loc></url>
+  <url><loc>https://your-domain.example/docs/api.html</loc></url>
+  <url><loc>https://your-domain.example/docs/choice.html</loc></url>
+  <url><loc>https://your-domain.example/docs/coding-agents.html</loc></url>
+  <url><loc>https://your-domain.example/docs/composite-scoring.html</loc></url>
+  <url><loc>https://your-domain.example/docs/confidence-routing.html</loc></url>
+  <url><loc>https://your-domain.example/docs/confidence.html</loc></url>
+  <url><loc>https://your-domain.example/docs/cookbooks.html</loc></url>
+  <url><loc>https://your-domain.example/docs/errors.html</loc></url>
+  <url><loc>https://your-domain.example/docs/fan-out.html</loc></url>
+  <url><loc>https://your-domain.example/docs/how-to-build.html</loc></url>
+  <url><loc>https://your-domain.example/docs/index.html</loc></url>
+  <url><loc>https://your-domain.example/docs/intent-routing.html</loc></url>
+  <url><loc>https://your-domain.example/docs/intro.html</loc></url>
+  <url><loc>https://your-domain.example/docs/jaggedness.html</loc></url>
+  <url><loc>https://your-domain.example/docs/models.html</loc></url>
+  <url><loc>https://your-domain.example/docs/noul.html</loc></url>
+  <url><loc>https://your-domain.example/docs/patterns.html</loc></url>
+  <url><loc>https://your-domain.example/docs/primitives.html</loc></url>
+  <url><loc>https://your-domain.example/docs/quickstart.html</loc></url>
+  <url><loc>https://your-domain.example/docs/score.html</loc></url>
+  <url><loc>https://your-domain.example/docs/sdk-js.html</loc></url>
+  <url><loc>https://your-domain.example/docs/sdk-python.html</loc></url>
+  <url><loc>https://your-domain.example/docs/state.html</loc></url>
+  <url><loc>https://your-domain.example/docs/system-one.html</loc></url>
+</urlset>
