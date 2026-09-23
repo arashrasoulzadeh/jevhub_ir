@@ -41,7 +41,16 @@
     const btn = $(".menu-btn"), nav = $(".nav");
     if (btn && nav) btn.addEventListener("click", () => nav.classList.toggle("open"));
     const page = document.body.dataset.page;
-    $$(".nav a").forEach((a) => { if (a.dataset.page === page) a.classList.add("active"); });
+    const slug = document.body.dataset.docSlug;
+    const links = $$(".nav a");
+    // یک لینک با data-slug دقیقاً همان صفحه (مثل «شروع سریع»/«مرجع API»
+    // در نوار بالا) از لینک عمومی‌تر data-page="docs" («مستندات») مشخص‌تر
+    // است؛ وقتی هر دو روی یک صفحه match می‌کنند فقط مشخص‌تر را active کن.
+    const exact = slug ? links.find((a) => a.dataset.slug === slug) : null;
+    links.forEach((a) => {
+      const isActive = exact ? a === exact : a.dataset.page === page;
+      a.classList.toggle("active", isActive);
+    });
   }
 
   /* ---------- Dates ---------- */
