@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path("/Users/arashrasoulzadeh/Documents/projects/jevhub_ir")
 OUT = ROOT / "docs"
-SITE_URL = "https://your-domain.example"
+SITE_URL = "https://meetarash.ir/jevhub_ir"
 
 GA_SNIPPET = '''  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-QV7SENV5V1"></script>

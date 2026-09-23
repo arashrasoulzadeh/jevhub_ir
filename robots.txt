@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /docs.html
-Sitemap: /sitemap.xml
+
+Sitemap: https://meetarash.ir/jevhub_ir/sitemap.xml
