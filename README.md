@@ -24,7 +24,22 @@ ss -ltn   # یا: netstat -nltp
 docker compose up -d --build
 ```
 
-سپس `http://<سرور>:<APP_PORT>` را باز کنید. تصویر با nginx محتوای استاتیک را سرو می‌کند (`Dockerfile` + `docker/nginx.conf`)؛ کانتینر همیشه داخلش روی پورت ۸۰ گوش می‌دهد، فقط پورت سمت هاست از `APP_PORT` می‌آید.
+کانتینر فقط روی `127.0.0.1:${APP_PORT}` گوش می‌دهد (مستقیم به اینترنت expose نمی‌شود) — چون nginx سیستم شما احتمالاً از قبل پورت‌های ۸۰/۴۴۳ را گرفته و باید جلوی کانتینر reverse proxy باشد.
+
+### وصل‌کردن دامنه (`jevhub.ir`) با nginx سیستم
+
+دو کانفیگ nginx در پروژه است که نباید با هم اشتباه شوند:
+- **`docker/nginx.conf`** — داخل ایمیج Docker، محتوای استاتیک را سرو می‌کند. کاری با آن ندارید.
+- **`docker/reverse-proxy.jevhub.ir.conf`** — برای nginx **سیستم** (همان که روی پورت ۸۰/۴۴۳ سرور شما گوش می‌دهد)، ترافیک `jevhub.ir` را به کانتینر پاس می‌دهد.
+
+```bash
+sudo cp docker/reverse-proxy.jevhub.ir.conf /etc/nginx/sites-available/jevhub.ir
+sudo ln -s /etc/nginx/sites-available/jevhub.ir /etc/nginx/sites-enabled/jevhub.ir
+sudo nginx -t && sudo systemctl reload nginx
+sudo certbot --nginx -d jevhub.ir -d www.jevhub.ir   # گواهی HTTPS
+```
+
+اگر پورت داخل `APP_PORT` را در `.env` عوض کردید، همان مقدار را در `docker/reverse-proxy.jevhub.ir.conf` (خط `server 127.0.0.1:8088;`) هم به‌روز کنید.
 
 ## تنظیمات (`.env`)
 

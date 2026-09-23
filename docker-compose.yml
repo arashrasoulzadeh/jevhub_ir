@@ -4,7 +4,8 @@ services:
     image: jevhub:latest
     container_name: jevhub
     ports:
-      # APP_PORT از .env خوانده می‌شود (پیش‌فرض 8088 اگر .env یا این مقدار نبود).
-      # قبل از اجرا روی سرور، با `ss -ltn` یا `netstat -nltp` مطمئن شوید آزاد است.
-      - "${APP_PORT:-8088}:80"
+      # فقط روی لوپ‌بک باز می‌شود — nginx سیستم (پورت ۸۰/۴۴۳) reverse proxy
+      # است و به همین پورت وصل می‌شود؛ کانتینر مستقیم به اینترنت expose نمی‌شود.
+      # APP_PORT از .env می‌آید؛ با `ss -ltn` قبل از اجرا آزاد بودنش را چک کنید.
+      - "127.0.0.1:${APP_PORT:-8088}:80"
     restart: unless-stopped

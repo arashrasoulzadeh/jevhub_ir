@@ -34,22 +34,24 @@ print(f"wrote sitemap.xml ({len(pages)} urls, {SITE_URL})")
 print("wrote robots.txt")
 
 # ---- patch baked-in URLs in the three hand-authored files ----------------
-# Exact old-domain -> new-domain string swap per file, not a generic regex:
-# a regex matching "<anything>/<page>.html" is too easy to get wrong when
-# the path itself contains a directory (docs/index.html) — it did, once.
+# Don't try to guess the OLD url's shape (domain + however many path
+# segments SITE_URL used to have) — that broke once already when SITE_URL
+# itself gained/lost a path prefix. Instead target the known attributes
+# structurally and replace their value outright, regardless of what was
+# there before.
 def patch(path: Path, own_page: str):
     html = path.read_text(encoding="utf-8")
-    # domain + exactly one path segment (own_page) — won't touch a URL that
-    # has extra segments before it, e.g. .../docs/index.html when patching
-    # plain index.html.
-    new = re.sub(
-        r'https://[^/\s"\']+/' + re.escape(own_page) + r'(?=["\'\s])',
-        f"{SITE_URL}/{own_page}",
-        html,
-    )
+    new_url = f"{SITE_URL}/{own_page}"
+    new = html
+    new = re.sub(r'(<link rel="canonical" href=")[^"]*(")', rf"\g<1>{new_url}\g<2>", new)
+    new = re.sub(r'(<meta property="og:url" content=")[^"]*(")', rf"\g<1>{new_url}\g<2>", new)
+    # JSON-LD WebSite "url" field (only index.html has this one)
+    new = re.sub(r'("url":\s*")https://[^"]*/' + re.escape(own_page) + r'(")', rf"\g<1>{new_url}\g<2>", new)
     if new != html:
         path.write_text(new, encoding="utf-8")
         print("patched", path.relative_to(ROOT))
+    else:
+        print("no change needed:", path.relative_to(ROOT))
 
 patch(ROOT / "index.html", "index.html")
 patch(ROOT / "examples.html", "examples.html")
