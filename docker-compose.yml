@@ -4,5 +4,7 @@ services:
     image: jevhub:latest
     container_name: jevhub
     ports:
-      - "8080:80"
+      # APP_PORT از .env خوانده می‌شود (پیش‌فرض 8088 اگر .env یا این مقدار نبود).
+      # قبل از اجرا روی سرور، با `ss -ltn` یا `netstat -nltp` مطمئن شوید آزاد است.
+      - "${APP_PORT:-8088}:80"
     restart: unless-stopped

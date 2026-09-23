@@ -12,11 +12,19 @@ python3 dev-server.py
 
 ### اجرا با Docker
 
+روی یک سرور شلوغ، اول یک پورت آزاد پیدا کنید:
+
+```bash
+ss -ltn   # یا: netstat -nltp
+```
+
+مقدار `APP_PORT` را در `.env` به همان پورت آزاد تغییر دهید (پیش‌فرض `8088`)، سپس:
+
 ```bash
 docker compose up -d --build
 ```
 
-سپس `http://localhost:8080` را باز کنید. تصویر با nginx محتوای استاتیک را سرو می‌کند (`Dockerfile` + `docker/nginx.conf`)؛ برای پورت دیگر، مقدار `8080` را در `docker-compose.yml` عوض کنید.
+سپس `http://<سرور>:<APP_PORT>` را باز کنید. تصویر با nginx محتوای استاتیک را سرو می‌کند (`Dockerfile` + `docker/nginx.conf`)؛ کانتینر همیشه داخلش روی پورت ۸۰ گوش می‌دهد، فقط پورت سمت هاست از `APP_PORT` می‌آید.
 
 ## تنظیمات (`.env`)
 
