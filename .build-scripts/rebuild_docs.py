@@ -13,15 +13,25 @@ import html as htmlmod
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from env import SITE_URL  # از .env در ریشه‌ی پروژه خوانده می‌شود
+from env import SITE_URL, GA_MEASUREMENT_ID  # از .env در ریشه‌ی پروژه خوانده می‌شود
 
 ROOT = Path("/Users/arashrasoulzadeh/Documents/projects/jevhub_ir")
 OUT = ROOT / "docs"
 
-# نکته: تگ Google Analytics دیگر این‌جا inject نمی‌شود — assets/js/main.js
-# آن را در زمان اجرا از window.JEV_SITE.gaMeasurementId (تولیدشده توسط
-# gen_config.py از .env) می‌سازد. هر صفحه فقط باید config.js و main.js را
-# لود کند، که در PAGE پایین همین کار انجام می‌شود.
+# نکته: Google خودش می‌گوید این تگ باید literal در HTML، بلافاصله بعد از
+# <head>، باشد — ابزار تشخیص تگ گوگل صفحه را با جاوااسکریپت اجرا نمی‌کند،
+# فقط HTML خام را می‌خواند. تزریق پویا با main.js را امتحان کردیم و ابزار
+# گوگل آن را تشخیص نداد؛ پس این‌جا literal تولید می‌شود، فقط مقدارش (شناسه)
+# از .env می‌آید نه هاردکد در کد.
+GA_SNIPPET = f'''  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('js', new Date());
+
+    gtag('config', '{GA_MEASUREMENT_ID}');
+  </script>''' if GA_MEASUREMENT_ID else ""
 
 DOCS_UPDATED = re.search(r'docsUpdated:\s*"([^"]+)"', (ROOT / "assets/js/config.js").read_text(encoding="utf-8")).group(1)
 
@@ -163,6 +173,7 @@ def pager(i: int) -> str:
 PAGE = '''<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
+{ga}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title} | مستندات Jev | جِو هاب</title>
@@ -264,6 +275,7 @@ for i, slug in enumerate(order):
     page = PAGE.format(
         title=title_text,
         desc=desc_text.replace('"', "&quot;"),
+        ga=GA_SNIPPET,
         url=f"{SITE_URL}/docs/{slug}.html",
         title_json=json.dumps(title_text, ensure_ascii=False),
         desc_json=json.dumps(desc_text, ensure_ascii=False),

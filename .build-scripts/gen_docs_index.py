@@ -8,13 +8,22 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from env import SITE_URL  # از .env در ریشه‌ی پروژه خوانده می‌شود
+from env import SITE_URL, GA_MEASUREMENT_ID  # از .env در ریشه‌ی پروژه خوانده می‌شود
 
 ROOT = Path("/Users/arashrasoulzadeh/Documents/projects/jevhub_ir")
 OUT = ROOT / "docs"
 
-# نکته: تگ GA دیگر این‌جا inject نمی‌شود — assets/js/main.js آن را در زمان
-# اجرا از window.JEV_SITE.gaMeasurementId می‌سازد (بخش initAnalytics).
+# Google تگ را باید literal، بلافاصله بعد از <head> پیدا کند (ابزار
+# تشخیصش JS اجرا نمی‌کند) — مقدار از .env، ولی HTML خودش literal است.
+GA_SNIPPET = f'''  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('js', new Date());
+
+    gtag('config', '{GA_MEASUREMENT_ID}');
+  </script>''' if GA_MEASUREMENT_ID else ""
 
 DOCS_UPDATED = re.search(r'docsUpdated:\s*"([^"]+)"', (ROOT / "assets/js/config.js").read_text(encoding="utf-8")).group(1)
 
@@ -55,6 +64,7 @@ breadcrumb_items = ",\n        ".join(
 PAGE = f'''<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
+{GA_SNIPPET}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>مستندات Jev | جِو هاب</title>
