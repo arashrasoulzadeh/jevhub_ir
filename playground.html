@@ -74,7 +74,7 @@
       <div class="callout warn reveal">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
         <div>
-          <p><strong>این Jev واقعی نیست.</strong> این صفحه به API واقعی TypeSafe وصل نمی‌شود و هیچ کلید API لازم ندارد؛ در عوض روی سرور خودِ جِو هاب یک نمونه از <a href="docs/similar-models.html">Von</a> — جایگزین متن‌باز و خودمیزبان System One — اجرا شده و فقط از همین صفحه قابل‌فراخوانی است. Von مدل کوچک‌تر و کم‌دقت‌تری نسبت به Jev واقعی است (جدول مقایسه در <a href="docs/similar-models.html">صفحه‌ی جایگزین‌ها</a>) و ممکن است گاهی به سرویسش دسترسی نباشد که در آن صورت به یک شبیه‌سازی صرفاً نمایشی در خودِ مرورگر برمی‌گردیم — همیشه روی پانوشت پایین جعبه مشخص است کدام حالت است. برای فراخوانی واقعی Jev، <a href="docs/quickstart.html">شروع سریع</a> را ببینید.</p>
+          <p><strong>این Jev واقعی نیست.</strong> این صفحه به API واقعی TypeSafe وصل نمی‌شود و هیچ کلید API لازم ندارد؛ در عوض روی سرور خودِ جِو هاب یک نمونه از <a href="docs/similar-models.html">Von</a> — جایگزین متن‌باز و خودمیزبان System One — اجرا شده و فقط از همین صفحه قابل‌فراخوانی است. Von مدل کوچک‌تر و کم‌دقت‌تری نسبت به Jev واقعی است (جدول مقایسه در <a href="docs/similar-models.html">صفحه‌ی جایگزین‌ها</a>) و ممکن است گاهی به سرویسش دسترسی نباشد که در آن صورت به یک شبیه‌سازی صرفاً نمایشی در خودِ مرورگر برمی‌گردیم — همیشه روی پانوشت پایین جعبه مشخص است کدام حالت است. برای فراخوانی واقعی Jev، <a href="docs/quickstart.html">شروع سریع</a> را ببینید. برای جلوگیری از سوءاستفاده، تعداد درخواست هر بازدیدکننده محدود است؛ اگر از حد بگذرید ممکن است یک چالش کوتاه (کپچا) از شما خواسته شود.</p>
         </div>
       </div>
 
@@ -87,6 +87,10 @@
             <div class="demo-label"><span>state</span><span class="chip-type t-choice">von-1.2.0</span></div>
             <textarea id="pg-input" class="demo-state" style="width:100%;resize:vertical;min-height:96px;font-family:inherit;border:1px solid var(--border);outline:none" placeholder="متن خودتان را این‌جا بنویسید…"></textarea>
             <button id="pg-run" class="btn btn-primary" type="button" style="justify-self:start">اجرا</button>
+            <div id="pg-captcha-wrap" style="display:none;border:1px solid var(--border);border-radius:12px;padding:14px;background:var(--surface)">
+              <p id="pg-captcha-msg" style="margin:0 0 10px;font-size:.86rem;color:var(--text-2)"></p>
+              <div id="pg-captcha"></div>
+            </div>
             <div class="demo-label"><span>answers</span><span>سه پرسش ثابت: category / frustration / urgent</span></div>
             <div class="demo-answers"></div>
             <div class="demo-foot"><span id="pg-model-label" style="direction:rtl;text-align:right;font-family:'Vazirmatn',sans-serif">…</span><span class="usage">…</span></div>
@@ -136,8 +140,8 @@
     </div>
   </footer>
 
-  <script src="assets/js/config.js?v=ca3eb4db"></script>
+  <script src="assets/js/config.js?v=66b4d48f"></script>
   <script src="assets/js/main.js?v=c4847903"></script>
-  <script src="assets/js/playground.js?v=f2fc544b"></script>
+  <script src="assets/js/playground.js?v=474a3c95"></script>
 </body>
 </html>

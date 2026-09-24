@@ -89,14 +89,25 @@ need to run the script when you change the *shared shell* (e.g. add a top-nav li
   the `docker/reverse-proxy.jevhub.ir.conf` setup).
 - **`von`** — runs `von serve` from the `von-sdk` PyPI package (Von: the open-source,
   `/v1/systemone`-compatible System One model documented in `docs/similar-models.html`), backing
-  `playground.html`. **No `ports:`** — unreachable except from inside the compose network; the only
-  path in is `jevhub`'s nginx proxying `/api/von/` → `von:8000/v1/`, with an Origin check
-  (`$http_origin` must match `$scheme://$http_host` or be empty) so only same-site `fetch()` calls
-  get through. Model weights (~1.5GB) are cached in the `von-hf-cache` volume and only download on
-  first boot. `assets/js/playground.js` falls back to a local client-side keyword heuristic if the
-  Von call fails (e.g. weights still downloading, or `von` unreachable in local/non-Docker dev), and
-  visibly labels which mode produced the current answer — never silently pass off the heuristic as a
-  real model response.
+  `playground.html`. **No `ports:`** — unreachable except from inside the compose network. Model
+  weights (~1.5GB) are cached in the `von-hf-cache` volume and only download on first boot.
+- **`gate`** (`docker/gate/`) — a small FastAPI service that sits between nginx and `von`; also
+  **no `ports:`**. `jevhub`'s nginx proxies `/api/von/` → `gate:8000/` (Origin must exactly match
+  `$scheme://$http_host`, no exceptions — POST fetches always carry Origin, so this alone blocks
+  Postman/curl/other origins, which don't send one by default). `gate` then: (1) in-memory sliding-
+  window rate-limits by IP (`RATE_LIMIT`/`RATE_WINDOW_S` constants in `app.py`, no Redis — resets on
+  container restart, which is fine at this scale), (2) on `POST /systemone`, proxies through to
+  `von:8000/v1/systemone` if under the limit, else returns `429` with `captcha_required` when
+  `TURNSTILE_SECRET_KEY` is set, (3) `POST /verify-captcha` validates a Cloudflare Turnstile token
+  server-side and, on success, exempts that IP from the counter for `VERIFIED_BONUS_S`. The Turnstile
+  **site key** (public) lives in `assets/js/config.js` (`turnstileSiteKey`); the **secret key**
+  (private) only ever goes in `.env`/`docker-compose.yml` → `gate`'s environment, never in a served
+  file. Leaving both keys empty disables the captcha UI entirely and downgrades to a plain
+  "try again later" message once rate-limited — the rate limit and Origin check still apply either
+  way. `assets/js/playground.js` distinguishes a `429` (real rate limit → show captcha/wait gate) from
+  a network/shape failure (→ fall back to the client-side keyword heuristic), and always visibly
+  labels which of the three states (Von / rate-limited / local heuristic) produced the current answer
+  — never silently pass the heuristic off as a real model response.
 
 ## Content conventions
 

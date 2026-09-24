@@ -4,7 +4,7 @@ services:
     image: jevhub:latest
     container_name: jevhub
     depends_on:
-      - von
+      - gate
     ports:
       # فقط روی لوپ‌بک باز می‌شود — nginx سیستم (پورت ۸۰/۴۴۳) reverse proxy
       # است و به همین پورت وصل می‌شود؛ کانتینر مستقیم به اینترنت expose نمی‌شود.
@@ -12,10 +12,25 @@ services:
       - "127.0.0.1:${APP_PORT:-8088}:80"
     restart: unless-stopped
 
+  # دروازه‌ی نرخ‌محدودسازی/کپچا جلوی von (docker/gate/). بدون "ports:"؛
+  # فقط nginx کانتینر jevhub آن را صدا می‌زند (location /api/von/).
+  # TURNSTILE_SECRET_KEY از .env می‌آید؛ خالی بگذارید تا کپچا غیرفعال
+  # بماند (فقط نرخ‌محدودسازی + چک Origin در nginx فعال می‌مانند).
+  gate:
+    build: ./docker/gate
+    image: jevhub-gate:latest
+    container_name: jevhub-gate
+    depends_on:
+      - von
+    environment:
+      VON_URL: http://von:8000
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+    restart: unless-stopped
+
   # مدل Von برای Playground (docs/similar-models.html، جدول جایگزین‌ها).
   # عمداً هیچ "ports:" ندارد — یعنی هیچ آدرسی روی هاست/اینترنت باز نمی‌شود؛
   # فقط از داخل شبکه‌ی این docker-compose، با نام سرویس (von:8000)، توسط
-  # nginx کانتینر jevhub قابل‌دسترسی است (location /api/von/).
+  # سرویس gate قابل‌دسترسی است.
   von:
     build: ./docker/von
     image: jevhub-von:latest

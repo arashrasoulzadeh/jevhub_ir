@@ -54,7 +54,17 @@
     },
   };
 
-  /* ---------- منبع اول: فراخوانی واقعی سرویس Von ---------- */
+  /* ---------- منبع اول: فراخوانی واقعی سرویس Von (پشتِ gate) ---------- */
+  // gate (docker/gate/) وقتی یک IP از سقف نرخ رد شود ۴۲۹ برمی‌گرداند؛
+  // این خطای اختصاصی به run() اجازه می‌دهد به‌جای fallback خاموش به
+  // هیوریستیک محلی، یک کپچا یا پیام «کمی صبر کنید» واقعی نشان دهد.
+  function RateLimitedError(data) {
+    this.message = "rate_limited";
+    this.captchaRequired = !!(data && data.captcha_required);
+    this.userMessage = (data && data.message) || "تعداد درخواست‌های شما از حد مجاز گذشت.";
+  }
+  RateLimitedError.prototype = Object.create(Error.prototype);
+
   async function callVon(rawText) {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), VON_TIMEOUT_MS);
@@ -68,6 +78,11 @@
       });
     } finally {
       clearTimeout(timer);
+    }
+    if (res.status === 429) {
+      let data = {};
+      try { data = await res.json(); } catch (e) { /* ignore */ }
+      throw new RateLimitedError(data);
     }
     if (!res.ok) throw new Error("von http " + res.status);
     const data = await res.json();
@@ -84,6 +99,33 @@
       frustrationConfidence: a.frustration.confidence,
       tokens: (data.usage && data.usage.input_tokens) || null,
     };
+  }
+
+  /* ---------- Cloudflare Turnstile (فقط اگر turnstileSiteKey تنظیم شده) ---------- */
+  let turnstileScriptPromise = null;
+  function loadTurnstile() {
+    if (window.turnstile) return Promise.resolve();
+    if (turnstileScriptPromise) return turnstileScriptPromise;
+    turnstileScriptPromise = new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      s.async = true; s.defer = true;
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error("turnstile script failed"));
+      document.head.appendChild(s);
+    });
+    return turnstileScriptPromise;
+  }
+
+  async function verifyCaptchaToken(token) {
+    const res = await fetch("/api/von/verify-captcha", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return !!data.ok;
   }
 
   /* ---------- منبع دوم (fallback): هیوریستیک محلی کلیدواژه‌ای ---------- */
@@ -202,6 +244,11 @@
     const usage = box.querySelector(".usage");
     const modelLabel = document.getElementById("pg-model-label");
     const presetsEl = document.getElementById("pg-presets");
+    const captchaWrap = document.getElementById("pg-captcha-wrap");
+    const captchaSlot = document.getElementById("pg-captcha");
+    const captchaMsg = document.getElementById("pg-captcha-msg");
+    const siteKey = (window.JEV_SITE && window.JEV_SITE.turnstileSiteKey) || "";
+    let widgetId = null;
 
     PRESETS.forEach((p) => {
       const b = document.createElement("button");
@@ -209,6 +256,39 @@
       b.addEventListener("click", () => { input.value = p.text; run(); });
       presetsEl.appendChild(b);
     });
+
+    function hideCaptcha() {
+      if (captchaWrap) captchaWrap.style.display = "none";
+    }
+
+    async function showRateLimitGate(err) {
+      if (err.captchaRequired && siteKey) {
+        if (captchaMsg) captchaMsg.textContent = "برای ادامه، لطفاً این چالش کوتاه را حل کنید:";
+        if (captchaWrap) captchaWrap.style.display = "";
+        try {
+          await loadTurnstile();
+          if (widgetId === null && window.turnstile && captchaSlot) {
+            widgetId = window.turnstile.render(captchaSlot, {
+              sitekey: siteKey,
+              callback: async (token) => {
+                const ok = await verifyCaptchaToken(token);
+                if (ok) { hideCaptcha(); run(); }
+                else if (window.turnstile && widgetId !== null) window.turnstile.reset(widgetId);
+              },
+            });
+          } else if (widgetId !== null && window.turnstile) {
+            window.turnstile.reset(widgetId);
+          }
+        } catch (e) {
+          if (captchaMsg) captchaMsg.textContent = err.userMessage + " (بارگذاری کپچا هم شکست خورد؛ کمی بعد دوباره امتحان کنید.)";
+        }
+      } else {
+        if (captchaMsg) captchaMsg.textContent = err.userMessage + " چند دقیقه دیگر دوباره امتحان کنید.";
+        if (captchaWrap) captchaWrap.style.display = "";
+      }
+      if (modelLabel) { modelLabel.textContent = "محدود شد — منتظر تأیید"; modelLabel.classList.add("warn-text"); }
+      usage.textContent = "…";
+    }
 
     async function run() {
       const text = input.value.trim();
@@ -225,7 +305,13 @@
       let result;
       try {
         result = await callVon(text);
+        hideCaptcha();
       } catch (e) {
+        if (e instanceof RateLimitedError) {
+          await showRateLimitGate(e);
+          runBtn.disabled = false; runBtn.textContent = "اجرا";
+          return;
+        }
         result = localHeuristic(text);
       }
       render(result, { answers, usage, modelLabel });
