@@ -18,4 +18,7 @@ window.JEV_SITE = {
   model: "jev-1.13.0",
   alias: "jev-latest",
   sourceUrl: "https://docs.typesafe.ai",
+  // آخرین باری که جدول «جایگزین‌ها» (مدل‌های مشابه) بازبینی شد — این بازار
+  // به‌سرعت عوض می‌شود، این تاریخ را جدا از docsUpdated نگه می‌داریم
+  similarModelsUpdated: "2026-09-24",
 };

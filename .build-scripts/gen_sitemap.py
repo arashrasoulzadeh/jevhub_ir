@@ -52,8 +52,19 @@ print("wrote robots.txt")
 # itself gained/lost a path prefix. Instead target the known attributes
 # structurally and replace their value outright, regardless of what was
 # there before.
+# The GA block has TWO <script> tags (the async loader, then the inline
+# dataLayer/gtag calls). A naive non-greedy `.*?</script>` stops at the
+# FIRST </script> (end of the loader tag alone), leaving the second script
+# unmatched — so re-running this ended up duplicating the block instead of
+# replacing it. Anchor on the literal last line (`gtag('config', ...)`) so
+# the match always spans both script tags. (First attempt used a nested
+# `(?:.*\n)*?` quantifier here — with DOTALL that's catastrophic
+# backtracking, a single `.*?` already matches newlines and doesn't blow up.)
 GA_BLOCK_RE = re.compile(
-    r'  <!-- Google tag \(gtag\.js\) -->\n.*?</script>\n', re.S
+    r"  <!-- Google tag \(gtag\.js\) -->\n"
+    r'  <script async src="[^"]*"></script>\n'
+    r"  <script>.*?gtag\('config', '[^']*'\);\n  </script>\n",
+    re.S,
 )
 
 def patch(path: Path, own_page: str, with_ga: bool = False):

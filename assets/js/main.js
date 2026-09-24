@@ -617,30 +617,30 @@
      ========================================================================== */
   const SCENARIOS = [
     {
-      state: "Hi, I've been trying to connect my Stripe account for 3 days and the integration keeps failing. I'm losing sales. Please help ASAP.",
+      state: "سلام، سه روزه دارم تلاش می‌کنم درگاه پرداختم رو وصل کنم و هی خطا می‌ده. دارم مشتری از دست می‌دم. لطفاً فوری کمکم کنید.",
       answers: [
-        { type: "choice", q: "کدام تیم رسیدگی کند؟", v: 'choice: "technical"', bars: [["technical", .85], ["billing", .15], ["sales", 0]] },
-        { type: "score", q: "میزان ناراحتی مشتری", v: "score: 1.0", bars: [["0 calm", 0], ["1 civil", 1], ["2 angry", 0]] },
+        { type: "choice", q: "کدام تیم رسیدگی کند؟", v: 'choice: "technical"', bars: [["فنی", .85], ["مالی", .15], ["فروش", 0]] },
+        { type: "score", q: "میزان ناراحتی مشتری", v: "score: 1.0", bars: [["۰ آرام", 0], ["۱ عادی", 1], ["۲ عصبانی", 0]] },
         { type: "noul", q: "آیا پیام فوریت دارد؟", v: "noul: 1.0" },
       ],
       usage: "input_tokens: 392",
     },
     {
-      state: "The export button crashes the settings page in Safari. It works in Chrome, but a few of our customers only use Safari.",
+      state: "دکمه‌ی خروجی گرفتن، صفحه‌ی تنظیمات رو توی سافاری کرش می‌ده. توی کروم درست کار می‌کنه، ولی چند تا از مشتری‌ها فقط سافاری استفاده می‌کنن.",
       answers: [
-        { type: "score", q: "شدت باگ گزارش‌شده", v: "score: 1.43", bars: [["0 cosmetic", 0], ["1 workaround", .57], ["2 blocking", .43]] },
+        { type: "score", q: "شدت باگ گزارش‌شده", v: "score: 1.43", bars: [["۰ ظاهری", 0], ["۱ راه‌حل موقت دارد", .57], ["۲ مسدودکننده", .43]] },
       ],
       usage: "input_tokens: 332",
     },
     {
-      state: "My running shoes arrived in the wrong size. Can I swap them for a size 10?",
+      state: "کفش دویدنی که سفارش داده بودم سایزش اشتباه اومده. می‌شه با سایز ۴۰ عوضش کنم؟",
       answers: [
-        { type: "choice", q: "کدام تیم رسیدگی کند؟", v: 'choice: "returns"', bars: [["returns", 1], ["shipping", 0], ["billing", 0]] },
+        { type: "choice", q: "کدام تیم رسیدگی کند؟", v: 'choice: "returns"', bars: [["مرجوعی", 1], ["ارسال", 0], ["مالی", 0]] },
       ],
       usage: "input_tokens: 328",
     },
     {
-      state: "I have asked three times now. Can I please just talk to a real person?",
+      state: "من سه بار درخواست دادم. می‌شه لطفاً با یک اپراتور واقعی صحبت کنم؟",
       answers: [
         { type: "noul", q: "مشتری اپراتور انسانی می‌خواهد؟", v: "noul: 0.99" },
         { type: "noul", q: "قبلاً هم تماس گرفته است؟", v: "noul: 0.93" },

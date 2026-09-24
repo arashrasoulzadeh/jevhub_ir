@@ -268,7 +268,17 @@ PAGE = '''<!doctype html>
 </html>
 '''
 
+# Pages with a hero/body structure that doesn't fit the standard "translated
+# from the English docs" template — e.g. similar-models.html has its own
+# similarModelsUpdated date field instead of docsUpdated/sourceReviewed, and
+# a custom intro/callout layout. Stay in the sidebar/pager manifest (so
+# other pages link and order correctly) but skip re-rendering: hand-edit
+# these directly, the same way index.html/examples.html are hand-maintained.
+HAND_MAINTAINED = {"similar-models"}
+
 for i, slug in enumerate(order):
+    if slug in HAND_MAINTAINED:
+        continue
     sec = sections[slug]
     title_text = plain_title(sec["title_html"])
     desc_text = strip_tags(sec["desc_html"])
