@@ -93,3 +93,10 @@ patch(ROOT / "index.html", "index.html", with_ga=True)
 patch(ROOT / "examples.html", "examples.html", with_ga=True)
 patch(ROOT / "playground.html", "playground.html", with_ga=True)
 patch(ROOT / "docs.html", "docs/index.html")
+
+# ---- cache-bust every page's assets/css|js references --------------------
+# Runs last, every time, so any earlier script in the chain (this one or
+# rebuild_docs.py) that rewrote a <link>/<script> tag back to its plain,
+# unversioned form still ends up with a fresh ?v=<hash> before deploy.
+import cache_bust  # noqa: E402  (local sibling script)
+cache_bust.main()
