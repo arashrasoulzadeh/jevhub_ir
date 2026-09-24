@@ -92,9 +92,18 @@ need to run the script when you change the *shared shell* (e.g. add a top-nav li
   `playground.html`. **No `ports:`** — unreachable except from inside the compose network. Model
   weights (~1.5GB) are cached in the `von-hf-cache` volume and only download on first boot.
 - **`gate`** (`docker/gate/`) — a small FastAPI service that sits between nginx and `von`; also
-  **no `ports:`**. `jevhub`'s nginx proxies `/api/von/` → `gate:8000/` (Origin must exactly match
-  `$scheme://$http_host`, no exceptions — POST fetches always carry Origin, so this alone blocks
-  Postman/curl/other origins, which don't send one by default). `gate` then: (1) in-memory sliding-
+  **no `ports:`**. `jevhub`'s nginx proxies `/api/von/` → `gate:8000/`, gated by an Origin check that
+  must be written as `if ($http_origin = "https://$http_host")` / `if ($http_origin =
+  "http://$http_host")` (plain `=`, two branches, one per scheme) — **not** a `~`/`!~` regex
+  containing `$http_host`, because nginx compiles regexes once at startup and never substitutes
+  request-time variables into them, so a pattern like `"^https?://$http_host$"` silently matches the
+  literal, never-true string `$http_host` forever (hit this live: it 403'd every single request and
+  the frontend reported it as "Von unreachable"). Also don't compare against `$scheme` directly —
+  this container has no TLS (that terminates in front of it, e.g. the host's own
+  `docker/reverse-proxy.jevhub.ir.conf`/ArvanCloud), so `$scheme` here is always `http` even when the
+  real client used `https`, and `$scheme://$http_host` then never matches the browser's real
+  `https://` Origin. Postman/curl/other origins still get a `403` since they don't send an Origin
+  header matching either branch by default. `gate` then: (1) in-memory sliding-
   window rate-limits by IP (`RATE_LIMIT`/`RATE_WINDOW_S` constants in `app.py`, no Redis — resets on
   container restart, which is fine at this scale), (2) on `POST /systemone`, proxies through to
   `von:8000/v1/systemone` if under the limit, else returns `429` with `captcha_required` when both
