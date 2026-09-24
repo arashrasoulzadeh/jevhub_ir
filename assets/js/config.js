@@ -21,11 +21,13 @@ window.JEV_SITE = {
   // آخرین باری که جدول «جایگزین‌ها» (مدل‌های مشابه) بازبینی شد — این بازار
   // به‌سرعت عوض می‌شود، این تاریخ را جدا از docsUpdated نگه می‌داریم
   similarModelsUpdated: "2026-09-24",
-  // کلید عمومی (site key) Cloudflare Turnstile برای کپچای Playground —
-  // این مقدار محرمانه نیست (طراحی Turnstile همین است)، برخلاف secret key
-  // که فقط در docker-compose.yml/.env سمت سرویس gate قرار می‌گیرد و هرگز
-  // این‌جا نمی‌آید. اگر خالی بماند، کپچا غیرفعال است و به‌جایش فقط پیام
-  // «کمی صبر کنید» بعد از محدودیت نرخ نشان داده می‌شود. از
-  // https://dash.cloudflare.com/?to=/:account/turnstile بگیرید.
-  turnstileSiteKey: "",
+  // کلید عمومی (site key) ARCaptcha (arcaptcha.ir) برای کپچای Playground —
+  // نه Cloudflare Turnstile، چون این پروژه روی ArvanCloud میزبانی می‌شود.
+  // این مقدار محرمانه نیست، برخلاف secret key که فقط در
+  // docker-compose.yml/.env سمت سرویس gate قرار می‌گیرد و هرگز این‌جا
+  // نمی‌آید (باید همان مقدار SITE key را در هر دو جا دستی هم‌سان نگه
+  // دارید). اگر خالی بماند، کپچا غیرفعال است و به‌جایش فقط پیام «کمی صبر
+  // کنید» بعد از محدودیت نرخ نشان داده می‌شود. از
+  // https://arcaptcha.ir/dashboard بگیرید.
+  arcaptchaSiteKey: "",
 };

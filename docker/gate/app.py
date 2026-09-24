@@ -1,8 +1,14 @@
 """
 دروازه‌ی Playground جِو هاب — بین nginx و سرویس Von می‌نشیند تا:
   ۱) نرخ درخواست هر IP را محدود کند (بدون نیاز به کلید API یا لاگین)،
-  ۲) وقتی یک IP از حد رد شد، قبل از ادامه یک چالش Cloudflare Turnstile
-     بخواهد (اگر TURNSTILE_SECRET_KEY تنظیم شده باشد).
+  ۲) وقتی یک IP از حد رد شد، قبل از ادامه یک چالش ARCaptcha بخواهد
+     (اگر ARCAPTCHA_SECRET_KEY تنظیم شده باشد).
+
+از ARCaptcha (arcaptcha.ir/arcaptcha.co) استفاده شده، نه Cloudflare
+Turnstile/reCAPTCHA — چون این پروژه روی ArvanCloud میزبانی می‌شود و
+سرویس‌های Cloudflare معمولاً برای حساب‌های ایرانی در دسترس نیستند.
+ArvanCloud خودش هم ARCaptcha را به‌عنوان یکی از گزینه‌های کپچای
+DDoS-protection‌اش معرفی می‌کند.
 
 این یک وب‌سرویس بدون‌احراز و عمومی است (چون Playground نیازی به لاگین
 ندارد)؛ محافظت در چند لایه انجام می‌شود، نه یک لایه:
@@ -10,7 +16,7 @@
     سرویس را دارد — یعنی Postman/curl/httpie (که به‌صورت پیش‌فرض هیچ
     Origin نمی‌فرستند) و fetch از دامنه‌ی دیگر همین‌جا با ۴۰۳ رد می‌شوند.
   - این فایل: شمارش درخواست در حافظه (in-memory)، به‌ازای IP.
-  - اختیاری: Cloudflare Turnstile وقتی شمارنده رد شود.
+  - اختیاری: ARCaptcha وقتی شمارنده رد شود.
   - docker-compose.yml: نه این سرویس و نه von هیچ پورتی روی هاست/اینترنت
     باز نمی‌کنند؛ تنها راه رسیدن، nginx کانتینر jevhub است.
 
@@ -26,7 +32,9 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 VON_URL = os.environ.get("VON_URL", "http://von:8000")
-TURNSTILE_SECRET_KEY = os.environ.get("TURNSTILE_SECRET_KEY", "").strip()
+ARCAPTCHA_SITE_KEY = os.environ.get("ARCAPTCHA_SITE_KEY", "").strip()
+ARCAPTCHA_SECRET_KEY = os.environ.get("ARCAPTCHA_SECRET_KEY", "").strip()
+ARCAPTCHA_VERIFY_URL = "https://api.arcaptcha.co/arcaptcha/api/verify"
 
 RATE_WINDOW_S = 60
 RATE_LIMIT = 8            # هر IP، حداکثر ۸ درخواست در ۶۰ ثانیه، بدون کپچا
@@ -70,12 +78,13 @@ def health():
 async def systemone(req: Request):
     ip = client_ip(req)
     if not hit_and_check(ip):
+        captcha_ready = bool(ARCAPTCHA_SITE_KEY and ARCAPTCHA_SECRET_KEY)
         return JSONResponse(
             status_code=429,
             content={
                 "error": "rate_limited",
                 "message": "تعداد درخواست‌های شما از حد مجاز گذشت.",
-                "captcha_required": bool(TURNSTILE_SECRET_KEY),
+                "captcha_required": captcha_ready,
             },
         )
     body = await req.body()
@@ -98,7 +107,7 @@ async def systemone(req: Request):
 @app.post("/verify-captcha")
 async def verify_captcha(req: Request):
     ip = client_ip(req)
-    if not TURNSTILE_SECRET_KEY:
+    if not (ARCAPTCHA_SITE_KEY and ARCAPTCHA_SECRET_KEY):
         return JSONResponse(status_code=400, content={"ok": False, "error": "captcha_not_configured"})
     try:
         data = await req.json()
@@ -110,8 +119,12 @@ async def verify_captcha(req: Request):
 
     async with httpx.AsyncClient(timeout=10) as client:
         r = await client.post(
-            "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-            data={"secret": TURNSTILE_SECRET_KEY, "response": token, "remoteip": ip},
+            ARCAPTCHA_VERIFY_URL,
+            json={
+                "challenge_id": token,
+                "site_key": ARCAPTCHA_SITE_KEY,
+                "secret_key": ARCAPTCHA_SECRET_KEY,
+            },
         )
     ok = bool(r.json().get("success"))
     if ok:

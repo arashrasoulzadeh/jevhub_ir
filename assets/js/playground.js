@@ -101,20 +101,23 @@
     };
   }
 
-  /* ---------- Cloudflare Turnstile (فقط اگر turnstileSiteKey تنظیم شده) ---------- */
-  let turnstileScriptPromise = null;
-  function loadTurnstile() {
-    if (window.turnstile) return Promise.resolve();
-    if (turnstileScriptPromise) return turnstileScriptPromise;
-    turnstileScriptPromise = new Promise((resolve, reject) => {
+  /* ---------- ARCaptcha (فقط اگر arcaptchaSiteKey تنظیم شده) ----------
+     arcaptcha.ir/arcaptcha.co، نه Cloudflare Turnstile — این پروژه روی
+     ArvanCloud میزبانی می‌شود و Cloudflare معمولاً برای حساب‌های ایرانی
+     در دسترس نیست. */
+  let arcaptchaScriptPromise = null;
+  function loadArCaptcha() {
+    if (window.arcaptcha) return Promise.resolve();
+    if (arcaptchaScriptPromise) return arcaptchaScriptPromise;
+    arcaptchaScriptPromise = new Promise((resolve, reject) => {
       const s = document.createElement("script");
-      s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      s.src = "https://nwidget.arcaptcha.ir/1/api.js";
       s.async = true; s.defer = true;
       s.onload = () => resolve();
-      s.onerror = () => reject(new Error("turnstile script failed"));
+      s.onerror = () => reject(new Error("arcaptcha script failed"));
       document.head.appendChild(s);
     });
-    return turnstileScriptPromise;
+    return arcaptchaScriptPromise;
   }
 
   async function verifyCaptchaToken(token) {
@@ -247,7 +250,7 @@
     const captchaWrap = document.getElementById("pg-captcha-wrap");
     const captchaSlot = document.getElementById("pg-captcha");
     const captchaMsg = document.getElementById("pg-captcha-msg");
-    const siteKey = (window.JEV_SITE && window.JEV_SITE.turnstileSiteKey) || "";
+    const siteKey = (window.JEV_SITE && window.JEV_SITE.arcaptchaSiteKey) || "";
     let widgetId = null;
 
     PRESETS.forEach((p) => {
@@ -261,23 +264,26 @@
       if (captchaWrap) captchaWrap.style.display = "none";
     }
 
+    // نام سراسری ثابت برای data-callback ARCaptcha (کتابخانه با نام صدا
+    // می‌زند، نه با ارجاع مستقیم تابع در params).
+    window.__pgCaptchaSolved = async function (token) {
+      const ok = await verifyCaptchaToken(token);
+      if (ok) { hideCaptcha(); run(); }
+      else if (window.arcaptcha && widgetId !== null) window.arcaptcha.reset(widgetId);
+    };
+
     async function showRateLimitGate(err) {
       if (err.captchaRequired && siteKey) {
         if (captchaMsg) captchaMsg.textContent = "برای ادامه، لطفاً این چالش کوتاه را حل کنید:";
         if (captchaWrap) captchaWrap.style.display = "";
         try {
-          await loadTurnstile();
-          if (widgetId === null && window.turnstile && captchaSlot) {
-            widgetId = window.turnstile.render(captchaSlot, {
-              sitekey: siteKey,
-              callback: async (token) => {
-                const ok = await verifyCaptchaToken(token);
-                if (ok) { hideCaptcha(); run(); }
-                else if (window.turnstile && widgetId !== null) window.turnstile.reset(widgetId);
-              },
-            });
-          } else if (widgetId !== null && window.turnstile) {
-            window.turnstile.reset(widgetId);
+          await loadArCaptcha();
+          if (widgetId === null && window.arcaptcha && captchaSlot) {
+            captchaSlot.setAttribute("data-site-key", siteKey);
+            captchaSlot.setAttribute("data-callback", "__pgCaptchaSolved");
+            widgetId = window.arcaptcha.render(captchaSlot, { site_key: siteKey });
+          } else if (widgetId !== null && window.arcaptcha) {
+            window.arcaptcha.reset(widgetId);
           }
         } catch (e) {
           if (captchaMsg) captchaMsg.textContent = err.userMessage + " (بارگذاری کپچا هم شکست خورد؛ کمی بعد دوباره امتحان کنید.)";

@@ -97,14 +97,17 @@ need to run the script when you change the *shared shell* (e.g. add a top-nav li
   Postman/curl/other origins, which don't send one by default). `gate` then: (1) in-memory sliding-
   window rate-limits by IP (`RATE_LIMIT`/`RATE_WINDOW_S` constants in `app.py`, no Redis — resets on
   container restart, which is fine at this scale), (2) on `POST /systemone`, proxies through to
-  `von:8000/v1/systemone` if under the limit, else returns `429` with `captcha_required` when
-  `TURNSTILE_SECRET_KEY` is set, (3) `POST /verify-captcha` validates a Cloudflare Turnstile token
-  server-side and, on success, exempts that IP from the counter for `VERIFIED_BONUS_S`. The Turnstile
-  **site key** (public) lives in `assets/js/config.js` (`turnstileSiteKey`); the **secret key**
-  (private) only ever goes in `.env`/`docker-compose.yml` → `gate`'s environment, never in a served
-  file. Leaving both keys empty disables the captcha UI entirely and downgrades to a plain
-  "try again later" message once rate-limited — the rate limit and Origin check still apply either
-  way. `assets/js/playground.js` distinguishes a `429` (real rate limit → show captcha/wait gate) from
+  `von:8000/v1/systemone` if under the limit, else returns `429` with `captcha_required` when both
+  `ARCAPTCHA_SITE_KEY`/`ARCAPTCHA_SECRET_KEY` are set, (3) `POST /verify-captcha` validates an
+  ARCaptcha (arcaptcha.ir — **not** Cloudflare Turnstile/hCaptcha/reCAPTCHA; this project is hosted
+  on ArvanCloud, and Cloudflare's services are generally unusable for Iranian accounts) token
+  server-side and, on success, exempts that IP from the counter for `VERIFIED_BONUS_S`. The
+  **site key** (public) lives in `assets/js/config.js` (`arcaptchaSiteKey`) and must be kept in sync
+  by hand with the identical value in `.env`'s `ARCAPTCHA_SITE_KEY` (the server needs it too, for the
+  verify call); the **secret key** only ever goes in `.env`/`docker-compose.yml` → `gate`'s
+  environment, never in a served file. Leaving both env keys empty disables the captcha UI entirely
+  and downgrades to a plain "try again later" message once rate-limited — the rate limit and Origin
+  check still apply either way. `assets/js/playground.js` distinguishes a `429` (real rate limit → show captcha/wait gate) from
   a network/shape failure (→ fall back to the client-side keyword heuristic), and always visibly
   labels which of the three states (Von / rate-limited / local heuristic) produced the current answer
   — never silently pass the heuristic off as a real model response.
