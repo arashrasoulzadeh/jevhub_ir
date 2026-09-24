@@ -81,7 +81,7 @@
 
   <div class="scrim"></div>
 
-  <div class="docs-layout">
+  <div class="docs-layout wide">
     <aside class="sidebar" aria-label="فهرست مستندات">
       <label class="side-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -143,7 +143,7 @@
       </div>
 
       <section class="doc-section" id="similar-models">
-        <p>این صفحه بخشی از مستندات رسمی TypeSafe نیست — یک جمع‌بندی مستقل از گشت‌وگذار در وب است تا اگر دنبال جایگزین Jev، یک نسخه‌ی متن‌باز و خودمیزبان آن، یا صرفاً یک مقایسه‌ی سریع می‌گردید، همه‌چیز یک‌جا باشد. بازار مدل‌های تصمیم‌گیر خیلی سریع عوض می‌شود؛ به همان دلیل تاریخ «آخرین بازبینی» بالا از تاریخ کلی مستندات جداست و به‌طور مستقل قابل به‌روزرسانی است (فایل <code>assets/js/config.js</code>، کلید <code>similarModelsUpdated</code>).</p>
+        <p>این صفحه بخشی از مستندات رسمی TypeSafe نیست — یک جمع‌بندی مستقل از گشت‌وگذار در وب است تا اگر دنبال جایگزین Jev، یک نسخه‌ی متن‌باز و خودمیزبان آن، یا صرفاً یک مقایسه‌ی سریع می‌گردید، همه‌چیز یک‌جا باشد. بازار مدل‌های تصمیم‌گیر خیلی سریع عوض می‌شود؛ به همان دلیل تاریخ «آخرین بازبینی» بالا از تاریخ کلی مستندات جداست و مستقل از آن به‌روزرسانی می‌شود.</p>
 
         <div class="callout warn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
@@ -161,6 +161,7 @@
             <th>RAM / CPU لازم</th>
             <th>سرعت نسبت به Jev</th>
             <th>دقت / کالیبراسیون نسبت به Jev</th>
+            <th>سازگار با API جو؟</th>
           </tr></thead>
           <tbody>
             <tr>
@@ -170,6 +171,7 @@
               <td>~۳۹۵M پارامتر (~۱٫۵GB)؛ با GPU بهتر</td>
               <td><span class="level l1">ادعای سریع‌تر</span></td>
               <td><span class="level l2">مشابه (تأییدنشده)</span></td>
+              <td><span class="level l1">بله (ادعا می‌کند)</span></td>
             </tr>
             <tr>
               <td><a href="#sm-bart">BART-large-MNLI</a></td>
@@ -178,6 +180,7 @@
               <td>~۴۰۰M پارامتر، ~۴٫۵GB VRAM (روی CPU هم اجرا می‌شود، کندتر)</td>
               <td><span class="level l3">کندتر</span></td>
               <td><span class="level l3">پایین‌تر برای قضاوت‌های ظریف</span></td>
+              <td><span class="level l3">خیر</span></td>
             </tr>
             <tr>
               <td><a href="#sm-instructor">Instructor</a></td>
@@ -186,6 +189,7 @@
               <td>به مدل انتخابی شما بستگی دارد</td>
               <td><span class="level l2">به مدل زیرین بستگی دارد</span></td>
               <td><span class="level l2">بدون کالیبراسیون بومی</span></td>
+              <td><span class="level l3">خیر</span></td>
             </tr>
             <tr>
               <td><a href="#sm-outlines">Outlines</a></td>
@@ -194,6 +198,7 @@
               <td>به مدل انتخابی شما بستگی دارد</td>
               <td><span class="level l2">به مدل زیرین بستگی دارد</span></td>
               <td><span class="level l2">بدون کالیبراسیون بومی</span></td>
+              <td><span class="level l3">خیر</span></td>
             </tr>
             <tr>
               <td><a href="#sm-openai">OpenAI Structured Outputs</a></td>
@@ -202,6 +207,7 @@
               <td>— (بدون سخت‌افزار محلی)</td>
               <td><span class="level l3">کندتر برای چند پرسش هم‌زمان</span></td>
               <td><span class="level l2">زبان قوی، کالیبراسیون دستی</span></td>
+              <td><span class="level l3">خیر</span></td>
             </tr>
             <tr>
               <td><a href="#sm-gemini">Gemini Structured Output</a></td>
@@ -210,6 +216,7 @@
               <td>— (بدون سخت‌افزار محلی)</td>
               <td><span class="level l3">کندتر برای چند پرسش هم‌زمان</span></td>
               <td><span class="level l2">زبان قوی، کالیبراسیون دستی</span></td>
+              <td><span class="level l3">خیر</span></td>
             </tr>
             <tr>
               <td><a href="#sm-cf">Cloudflare Workers AI</a></td>
@@ -218,6 +225,7 @@
               <td>— (سرورلس)</td>
               <td><span class="level l1">خودِ Jev هم این‌جا هست</span></td>
               <td><span class="level l1">همان Jev (میزبانی جایگزین)</span></td>
+              <td><span class="level l1">بله (خودِ Jev است)</span></td>
             </tr>
             <tr>
               <td><a href="#sm-hf">HF AutoTrain</a></td>
@@ -226,6 +234,7 @@
               <td>سبک (مثلاً DistilBERT ~۲۵۰MB)، روی CPU هم قابل اجرا</td>
               <td><span class="level l1">سریع‌تر (بعد از آموزش)</span></td>
               <td><span class="level l3">نیاز به داده‌ی برچسب‌خورده دارد</span></td>
+              <td><span class="level l3">خیر</span></td>
             </tr>
           </tbody>
         </table></div>
@@ -312,15 +321,6 @@
         <a href="api.html" style="text-align:left"><small>بعدی</small>مرجع HTTP API</a>
       </div>
     </main>
-
-    <aside class="toc">
-      <h6>در این صفحه</h6>
-      <div class="toc-list"></div>
-      <div class="update-box">
-        <span style="color:var(--muted)">آخرین بازبینی</span>
-        <b data-date="similarModelsUpdated"></b>
-      </div>
-    </aside>
   </div>
 
   <button class="btn btn-primary docs-toggle" type="button">

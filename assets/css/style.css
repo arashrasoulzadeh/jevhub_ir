@@ -460,6 +460,9 @@ h1, h2, h3, h4 { line-height: 1.5; margin: 0 0 .6em; font-weight: 800; letter-sp
 .docs-layout { display: grid; grid-template-columns: 270px minmax(0, 1fr) 210px; gap: 44px; width: min(1360px, 100% - 32px); margin-inline: auto; padding-top: 30px; }
 @media (max-width: 1180px) { .docs-layout { grid-template-columns: 250px minmax(0, 1fr); } .toc { display: none; } }
 @media (max-width: 900px) { .docs-layout { grid-template-columns: minmax(0, 1fr); gap: 0; } }
+/* صفحاتی با محتوای پهن (مثل جدول‌های مقایسه) — بدون ستون «در این صفحه» */
+.docs-layout.wide { grid-template-columns: 270px minmax(0, 1fr); }
+@media (max-width: 900px) { .docs-layout.wide { grid-template-columns: minmax(0, 1fr); } }
 
 .sidebar {
   position: sticky; top: calc(var(--header-h) + 20px); align-self: start; max-height: calc(100vh - var(--header-h) - 40px); overflow-y: auto;
