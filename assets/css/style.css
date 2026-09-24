@@ -721,6 +721,17 @@ input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius
 .ex-search input { width: 100%; padding: 11px 42px 11px 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: inherit; font-size: .95rem; outline: none; }
 .ex-search input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(139,92,246,.15); }
 .ex-search svg { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; color: var(--muted); }
+.ex-toolbar-end { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.lang-toggle { display: flex; gap: 2px; padding: 3px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); }
+.lang-btn {
+  padding: 7px 14px; border-radius: 999px; border: none; background: transparent; color: var(--text-2);
+  font-family: inherit; font-weight: 600; font-size: .85rem; cursor: pointer; transition: .25s;
+}
+.lang-btn:hover { color: var(--text); }
+.lang-btn.on { background: var(--grad); color: #fff; box-shadow: 0 6px 18px -8px rgba(139,92,246,.8); }
+.ex-grid.lang-en, .drawer-body.lang-en { direction: ltr; text-align: left; }
+.ex-grid.lang-en .ex-card, .drawer-body.lang-en .ex-steps { direction: ltr; text-align: left; }
+.drawer-body.lang-en .ex-steps li::before { content: counter(s, decimal); }
 
 .ex-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 @media (max-width: 1000px) { .ex-grid { grid-template-columns: repeat(2, 1fr); } }

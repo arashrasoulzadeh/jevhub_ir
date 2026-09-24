@@ -18,6 +18,16 @@ from env import SITE_URL, GA_MEASUREMENT_ID  # از .env در ریشه‌ی پر
 ROOT = Path("/Users/arashrasoulzadeh/Documents/projects/jevhub_ir")
 OUT = ROOT / "docs"
 
+# Pages with a hero/body structure that doesn't fit the standard "translated
+# from the English docs" template — e.g. similar-models.html has its own
+# similarModelsUpdated date field instead of docsUpdated/sourceReviewed, and
+# a custom intro/callout layout; faq.html is an accordion, not a translated
+# single-source page, so it has no "منبع انگلیسی" link to extract. Stay in
+# the sidebar/pager manifest (so other pages link and order correctly) but
+# skip section-extraction and re-rendering: hand-edit these directly, the
+# same way index.html/examples.html are hand-maintained.
+HAND_MAINTAINED = {"similar-models", "faq"}
+
 # نکته: Google خودش می‌گوید این تگ باید literal در HTML، بلافاصله بعد از
 # <head>، باشد — ابزار تشخیص تگ گوگل صفحه را با جاوااسکریپت اجرا نمی‌کند،
 # فقط HTML خام را می‌خواند. تزریق پویا با main.js را امتحان کردیم و ابزار
@@ -51,6 +61,8 @@ order = [slug for slug, _ in manifest]
 # ---- 2. per-page title/desc/source/body from each existing page -----------
 sections = {}
 for slug in order:
+    if slug in HAND_MAINTAINED:
+        continue
     page = (OUT / f"{slug}.html").read_text(encoding="utf-8")
     hero = re.search(
         r'<h1[^>]*>(.*?)</h1>\s*<p>(.*?)</p>\s*<div class="meta-row">.*?'
@@ -97,6 +109,7 @@ def header() -> str:
         <a href="quickstart.html" data-slug="quickstart">شروع سریع</a>
         <a href="api.html" data-slug="api">مرجع API</a>
         <a href="../examples.html" data-page="examples">مثال‌ها</a>
+        <a href="../playground.html" data-page="playground">Playground</a>
         <a href="similar-models.html" data-slug="similar-models">جایگزین‌ها</a>
       </nav>
       <button class="icon-btn menu-btn" aria-label="منو"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
@@ -268,14 +281,6 @@ PAGE = '''<!doctype html>
 </body>
 </html>
 '''
-
-# Pages with a hero/body structure that doesn't fit the standard "translated
-# from the English docs" template — e.g. similar-models.html has its own
-# similarModelsUpdated date field instead of docsUpdated/sourceReviewed, and
-# a custom intro/callout layout. Stay in the sidebar/pager manifest (so
-# other pages link and order correctly) but skip re-rendering: hand-edit
-# these directly, the same way index.html/examples.html are hand-maintained.
-HAND_MAINTAINED = {"similar-models"}
 
 for i, slug in enumerate(order):
     if slug in HAND_MAINTAINED:

@@ -42,6 +42,27 @@ window.JEV_EXAMPLES = [
     pattern: "Speculative fan-out",
     added: "2026-09-23",
     readTime: 6,
+    en: {
+      title: "Smart support-ticket triage",
+      summary: "Classify the ticket, gauge bug severity, detect refund requests, and measure customer frustration — all in one call.",
+      tags: ["customer support", "routing", "python"],
+      scenario:
+        "A support system receives thousands of tickets a day. Each one needs to reach the right team; if it's a bug report, severity and reproduction steps matter; if it's billing, we need to know whether the customer wants a refund. Instead of several calls in sequence, we ask every question up front — even the ones that only apply to some tickets — in one request, and the code decides which answers to use.",
+      steps: [
+        "Prepare the ticket as state (a string or a JSON object).",
+        "Define five atomic questions: one Choice for the category, two Scores for bug severity and frustration, and two Nouls for reproduction steps and refund request.",
+        "Send them all in one request; Jev evaluates them in parallel and independently.",
+        "In code, read only the answers relevant to the category and ignore the rest.",
+        "If the category's confidence is low, route the ticket to manual triage.",
+      ],
+      responseNote:
+        "The numbers above are illustrative, to show the shape of the response. Here the ticket is a bug_report with severity above 1.5 and reproducible steps, so it's escalated to engineering. refund_requested is ignored because the ticket isn't billing-related.",
+      notes: [
+        "Speculative questions are nearly free: they all run in parallel and only cost their own input tokens.",
+        "Always include an other / none-of-the-above option in a Choice so the model isn't forced to fit unrelated input into one of your categories.",
+        "The thresholds (0.5, 0.6, 0.7, 1.5) are starting points — tune them on your own data.",
+      ],
+    },
     scenario:
       "یک سامانه‌ی پشتیبانی روزانه هزاران تیکت دریافت می‌کند. هر تیکت باید به تیم درست برود؛ اگر گزارش باگ است، شدت آن و وجود مراحل بازتولید مهم است؛ اگر مالی است، باید بدانیم مشتری بازپرداخت می‌خواهد یا نه. به‌جای چند فراخوانی پشت‌سرهم، همه‌ی پرسش‌ها — حتی آن‌هایی که فقط برای برخی تیکت‌ها معنا دارند — را یک‌جا می‌پرسیم و کد تصمیم می‌گیرد از کدام استفاده کند.",
     steps: [
@@ -216,6 +237,28 @@ def triage(ticket_id: str, ticket_text: str) -> None:
     pattern: "Confidence-gated routing",
     added: "2026-09-23",
     readTime: 7,
+    en: {
+      title: "Voice banking assistant with confidence gating",
+      summary: "Detect user intent from a voice command and only execute sensitive actions once the model is confident enough.",
+      tags: ["banking", "safety", "TypeScript"],
+      scenario:
+        "A user interacts with their bank account by voice. The transcript (after speech-to-text) is passed to Jev. Reading the balance is low-risk, but approving a transfer is high-risk — so we define a different confidence threshold per action in code: the riskier the action, the higher the bar. A Noul also checks whether the user explicitly asked for a human agent.",
+      steps: [
+        "Build the client on the server side (the API key must never reach the browser).",
+        "Use choice() to identify the user's intent among a few defined operations, and don't forget an other option.",
+        "Use noul() to check whether the user wants a human agent.",
+        "Below the floor threshold (0.6), take no action and route to support.",
+        "For transfers, only act automatically above 0.85, and ask the user to confirm between 0.6 and 0.85.",
+      ],
+      responseNote:
+        "Sample output: intent is \"approve_transfer\" but confidence 0.74 falls between the floor (0.6) and the threshold (0.85), so the system asks the user to confirm instead of acting automatically.",
+      notes: [
+        "Confidence threshold isn't one number: set a separate threshold per action, scaled to the cost of being wrong.",
+        "If you tuned thresholds against a specific version, pin that version (e.g. jev-1.13.0) instead of jev-latest.",
+        "Jev is most accurate on English text; if your commands are in Persian, test on your own data first and pay close attention to confidence.",
+        "The JS client doesn't run in the browser by default (dangerouslyAllowBrowser) so the API key can't leak.",
+      ],
+    },
     scenario:
       "کاربر با صدا با حساب بانکی‌اش کار می‌کند. متن فرمان (پس از تبدیل گفتار به متن) به Jev داده می‌شود. نمایش موجودی کم‌خطر است، اما تأیید انتقال وجه پرخطر است. پس برای هر عملیات آستانه‌ی اطمینان متفاوتی در کد تعریف می‌کنیم؛ هر چه ریسک بالاتر، آستانه بالاتر. یک Noul هم بررسی می‌کند آیا کاربر صراحتاً درخواست اپراتور انسانی کرده است.",
     steps: [
@@ -342,6 +385,27 @@ try {
     pattern: "Composite scoring",
     added: "2026-09-23",
     readTime: 8,
+    en: {
+      title: "Input/output guardrails for an LLM chatbot",
+      summary: "Screen every message with a Noul checklist and a severity Score; decide pass, review, or block in code.",
+      tags: ["content safety", "LLM", "cURL", "python"],
+      scenario:
+        "You have an LLM-based app and want to screen every user message and every model response before it's shown. Instead of one broad \"is this message dangerous?\" question, we break the judgment into several atomic Nouls (personal data, prompt-injection attempts, abusive content, medical/financial advice) plus a Score for overall severity. The final policy — pass, review, or block — lives as reviewable constants in code.",
+      steps: [
+        "Put the message, along with its role (user or assistant), into state.",
+        "Write a separate Noul for each hazard; each question should test exactly one condition.",
+        "Add a Score with descriptive levels for overall severity.",
+        "Keep the policy in one constant dictionary so changing it is a reviewable code change, not a rewritten question.",
+        "Send borderline values to a human review queue.",
+      ],
+      responseNote:
+        "Sample output: prompt_injection is 0.98, above block_at, so the message is blocked — even though overall severity was rated moderate.",
+      notes: [
+        "Phrase each question so a high value means \"yes, there's a risk.\" Negative phrasing (\"is the message free of ...?\") inverts your code's logic.",
+        "state is data, not instructions. Jev doesn't assume hostile content by default; write explicit criteria and test edge cases before rolling out.",
+        "Reference state fields by dotted path in backticks (like message.text) in the instructions so the model knows exactly what to judge.",
+      ],
+    },
     scenario:
       "یک اپلیکیشن مبتنی بر LLM دارید و می‌خواهید هر پیام ورودی کاربر و هر پاسخ خروجی مدل را پیش از نمایش بررسی کنید. به‌جای یک پرسش کلی «آیا این پیام خطرناک است؟»، قضاوت را به چند Noul اتمی (اطلاعات شخصی، تلاش برای تزریق دستور، محتوای توهین‌آمیز، توصیه‌ی پزشکی/مالی) و یک Score برای شدت می‌شکنیم. سیاست نهایی — عبور، بازبینی یا مسدود — به‌صورت ثابت‌های قابل بازبینی در کد نگهداری می‌شود.",
     steps: [
@@ -492,6 +556,26 @@ EOF
     pattern: "Speculative fan-out",
     added: "2026-09-23",
     readTime: 6,
+    en: {
+      title: "Search result re-ranking",
+      summary: "Re-rank a shortlist of text search results with one Noul per result, based on actual relevance to the query.",
+      tags: ["search", "information retrieval", "python"],
+      scenario:
+        "Traditional search engines (like BM25) rank by word overlap, not meaning. We take a shortlist of 20-30 results from BM25 and ask one Noul question per (query, document) pair: does this document actually answer the query? Then we re-sort by that probability instead of the BM25 score. TypeSafe's official cookbook tried the same idea on 40 legal queries and raised top-1 accuracy from 5% to 18%, and top-10 from 38% to 62%.",
+      steps: [
+        "Get a shortlist of 20-30 results per query from your existing search engine (BM25, Elasticsearch, etc.).",
+        "Build one Noul question with a unique id per (query, document) pair; send them all in one request.",
+        "Since the calls don't share a common state and there are many of them, send them to the API in parallel with a thread pool.",
+        "Sort results by the noul value (not the original BM25 score), descending.",
+      ],
+      responseNote:
+        "Sample output for one (query, document) pair. This call repeats once per document in the shortlist; the final result is the list of documents sorted by this probability.",
+      notes: [
+        "Unlike most examples on this page, this one has no shared state — each call scores a different (query, document) pair, so they can't be asked together in one request and must be called in parallel.",
+        "Because Jev isn't suited to precise numeric counting or comparison, we use the noul probability itself as the ranking score, not a fixed threshold.",
+        "For very long lists, first narrow to a few dozen candidates with BM25 or vector search; use Jev to re-rank that shortlist, not the whole dataset.",
+      ],
+    },
     scenario:
       "موتورهای جست‌وجوی سنتی (مثل BM25) بر اساس هم‌پوشانی کلمات رتبه می‌دهند، نه معنا. یک فهرست کوتاه ۲۰ تا ۳۰ نتیجه‌ای از BM25 می‌گیریم و برای هر جفت «پرس‌وجو، سند» یک پرسش Noul می‌پرسیم: آیا این سند واقعاً به پرس‌وجو پاسخ می‌دهد؟ سپس نتایج را بر اساس همین احتمال، نه امتیاز BM25، دوباره مرتب می‌کنیم. cookbook رسمی TypeSafe همین ایده را روی ۴۰ پرس‌وجوی حقوقی امتحان کرده و دقت top-1 را از ۵٪ به ۱۸٪ و top-10 را از ۳۸٪ به ۶۲٪ رسانده است.",
     steps: [
@@ -589,6 +673,26 @@ async function rerank(query: string, shortlist: { id: string; text: string }[]) 
     pattern: "Intent routing",
     added: "2026-09-23",
     readTime: 6,
+    en: {
+      title: "Function calling from natural-language requests",
+      summary: "Turn a Persian/English user request into a typed function call and its arguments — no free-form JSON parsing.",
+      tags: ["tools", "function calling", "TypeScript"],
+      scenario:
+        "Instead of asking an LLM to generate \"function-call JSON\" and then parsing and validating it, we make every part of the call a Choice with a constrained answer space: one to pick the function itself from the allowed functions, and one for each argument whose values are known in advance (stock symbol, order side, and so on). Because each Choice is limited to defined options, the output is always valid and no separate schema validation is needed.",
+      steps: [
+        "Define the allowed functions and each one's parameters in code (the same signature you'll eventually call).",
+        "Build a Choice that picks \"which function\" from the function names.",
+        "Build a separate Choice for each parameter that has a known set of values.",
+        "Send them all in one request and decide, based on confidence, whether to execute directly or ask the user to confirm.",
+      ],
+      responseNote:
+        "Sample output for a command like \"buy 10 shares of Apple.\" All three Choices have high confidence, so the code can call place_order directly with symbol=AAPL and side=buy.",
+      notes: [
+        "Because each argument is a Choice with a closed answer space, the output is always one of the allowed values — you no longer need to validate an LLM's free-form output.",
+        "Don't use Jev for free numeric arguments (like share count); extract those with simple text parsing or regex in code, since Jev isn't suited for exact numbers.",
+        "This is exactly the pattern the official \"Function calling\" cookbook shows with trading commands: mapping a function name and closed-set arguments to confidence-aware questions.",
+      ],
+    },
     scenario:
       "به‌جای این‌که از یک LLM بخواهیم «JSON فراخوانی تابع» تولید کند و بعد آن را parse و اعتبارسنجی کنیم، هر بخش از فراخوانی را یک Choice با فضای پاسخ محدود می‌سازیم: یکی برای انتخاب خودِ تابع از میان توابع مجاز، و یکی برای هر آرگومانی که مقادیرش از پیش مشخص است (نماد سهام، نوع سفارش و مانند آن). چون هر Choice به گزینه‌های تعریف‌شده محدود است، خروجی همیشه معتبر است و نیازی به schema-validation جداگانه نیست.",
     steps: [
@@ -727,6 +831,26 @@ def parse_command(user_text: str) -> dict:
     pattern: "Composite scoring",
     added: "2026-09-23",
     readTime: 7,
+    en: {
+      title: "Safe date extraction from text",
+      summary: "Extract date components (day, month, year) with separate Choices, and leave real calculation and comparison to code.",
+      tags: ["data extraction", "dates", "python"],
+      scenario:
+        "Per Jev's documented limitations, the model reads dates as text, not as ordered quantities, so comparing two dates directly isn't reliable. The fix: each date component (day, month, year) is a small closed set, so we extract each with a separate Choice — with an explicit \"not stated\" option for missing parts. Code then turns these parts into a real date object and compares them against our own thresholds.",
+      steps: [
+        "For each date mentioned in the text, build three Choice questions: day (1-31 + unknown), month (1-12 + unknown), and year (or relative, like \"this year\").",
+        "Add a Noul asking whether this date is relative (like \"next Tuesday\") or absolute.",
+        "In code, turn the answers into a real date object; resolve relative dates against today's date in code, not in the model.",
+        "Do all comparison, ordering, and distance calculation entirely in code, not in the question.",
+      ],
+      responseNote:
+        "Sample output for text like \"the contract was signed on March 14.\" is_relative is low because the date is absolute; code converts it directly to date(year, 3, 14).",
+      notes: [
+        "This is exactly the approach the \"Jev 1.13 limitations\" docs recommend for date comparison: extraction goes to Jev, calculation stays in code.",
+        "Never ask Jev to compare two dates directly or compute the distance between them — always do that with a real date type in code.",
+        "For the year, if the text doesn't state one, default to \"this year\" in code rather than asking the model to guess it.",
+      ],
+    },
     scenario:
       "طبق مستندات محدودیت‌های Jev، این مدل تاریخ را به‌صورت متن می‌خواند نه کمیت مرتب، پس مقایسه‌ی مستقیم دو تاریخ قابل اعتماد نیست. راه‌حل: هر بخش تاریخ (روز، ماه، سال) یک مجموعه‌ی بسته و کوچک است، پس هرکدام را با یک Choice جداگانه استخراج می‌کنیم — با گزینه‌ی صریح «ذکر نشده» برای بخش‌های غایب. سپس در کد این اجزا را به یک شیء تاریخ واقعی تبدیل و با آستانه‌های خودمان مقایسه می‌کنیم.",
     steps: [
@@ -806,6 +930,26 @@ def resolve(mention: str, today: date) -> date | None:
     pattern: "Confidence-gated routing",
     added: "2026-09-23",
     readTime: 5,
+    en: {
+      title: "Citation verification and hallucination guardrail",
+      summary: "Before showing a RAG assistant's answer, check every citation with a Choice against the original source text.",
+      tags: ["RAG", "guardrail", "python"],
+      scenario:
+        "RAG-based assistants sometimes cite a quote that either isn't in the source document, or is there but used out of context and doesn't actually support the claim. Before showing the answer to the user, we ask one Choice question per citation that judges the relationship between the quote and the claim: is it in the document and does it support the claim, is it there but doesn't support it, or is it not in the document at all.",
+      steps: [
+        "Extract the claim (the generated sentence) and its accompanying quote from the model's answer.",
+        "Find the original source document (from the same retrieval pipeline used in RAG).",
+        "Ask a three-option Choice: supports the claim / in the document but doesn't support it / not in the document.",
+        "Only show citations rated \"supports\" with high confidence unflagged; flag or remove the rest.",
+      ],
+      responseNote:
+        "Sample output for a case where the quote really is in the document but doesn't establish the model's claim (e.g. it was pulled out of context). At confidence 0.81, this answer gets flagged for review.",
+      notes: [
+        "state includes the source document itself, not a summary of it; for long documents, send only the relevant section (e.g. that one paragraph) to avoid the accuracy drop that comes with a large state.",
+        "This check can be run as a speculative fan-out for every citation in one answer in a single request — you don't need a separate call per citation if they all reference the same state.",
+        "For broader input/output guardrails (not just citations), see the \"Input/output guardrails for an LLM chatbot\" example on this page.",
+      ],
+    },
     scenario:
       "دستیارهای مبتنی بر RAG گاهی نقل‌قولی می‌آورند که یا از سند منبع نیست، یا هست ولی خارج از بافت به‌کار رفته و ادعا را تأیید نمی‌کند. پیش از نمایش پاسخ به کاربر، برای هر ارجاع یک پرسش Choice می‌پرسیم که رابطه‌ی نقل‌قول با ادعا را می‌سنجد: آیا از سند هست و ادعا را تأیید می‌کند، هست ولی تأیید نمی‌کند، یا اصلاً در سند نیست.",
     steps: [

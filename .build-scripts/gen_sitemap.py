@@ -26,7 +26,7 @@ GA_SNIPPET = f'''  <!-- Google tag (gtag.js) -->
 ROOT = Path("/Users/arashrasoulzadeh/Documents/projects/jevhub_ir")
 
 # ---- sitemap.xml ------------------------------------------------------
-pages = ["index.html", "examples.html"]
+pages = ["index.html", "examples.html", "playground.html"]
 for f in sorted(os.listdir(ROOT / "docs")):
     if f.endswith(".html"):
         pages.append("docs/" + f)
@@ -91,4 +91,5 @@ def patch(path: Path, own_page: str, with_ga: bool = False):
 
 patch(ROOT / "index.html", "index.html", with_ga=True)
 patch(ROOT / "examples.html", "examples.html", with_ga=True)
+patch(ROOT / "playground.html", "playground.html", with_ga=True)
 patch(ROOT / "docs.html", "docs/index.html")
