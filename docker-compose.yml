@@ -17,13 +17,15 @@ services:
   # ARCAPTCHA_SITE_KEY / ARCAPTCHA_SECRET_KEY از .env می‌آیند (arcaptcha.ir —
   # نه Cloudflare Turnstile، چون این پروژه روی ArvanCloud میزبانی می‌شود)؛
   # هر دو را خالی بگذارید تا کپچا غیرفعال بماند (فقط نرخ‌محدودسازی + چک
-  # Origin در nginx فعال می‌مانند).
+  # Origin در nginx فعال می‌مانند). عمداً depends_on روی von ندارد — اگر
+  # von اصلاً بالا نباشد (نگاه کنید به پروفایل "von" پایین)، httpx در
+  # app.py با خطای اتصال مواجه می‌شود و خودش ۵۰۲ برمی‌گرداند؛ فرانت‌اند
+  # (assets/js/playground.js) این را عادی می‌بیند و به هیوریستیک محلی
+  # سقوط می‌کند — یعنی gate بدون von هم سالم بالا می‌آید و کار می‌کند.
   gate:
     build: ./docker/gate
     image: jevhub-gate:latest
     container_name: jevhub-gate
-    depends_on:
-      - von
     environment:
       VON_URL: http://von:8000
       ARCAPTCHA_SITE_KEY: ${ARCAPTCHA_SITE_KEY:-}
@@ -34,10 +36,19 @@ services:
   # عمداً هیچ "ports:" ندارد — یعنی هیچ آدرسی روی هاست/اینترنت باز نمی‌شود؛
   # فقط از داخل شبکه‌ی این docker-compose، با نام سرویس (von:8000)، توسط
   # سرویس gate قابل‌دسترسی است.
+  #
+  # حافظه‌بر است (torch + transformers + وزن‌های ~۱٫۵GB در RAM) — روی
+  # سرورهای کم‌حافظه پروفایل "von" را غیرفعال بگذارید تا این سرویس اصلاً
+  # ساخته/اجرا نشود؛ Playground خودکار به حالت «فقط هیوریستیک محلی در
+  # مرورگر» برمی‌گردد (هیچ صفحه‌ای خراب نمی‌شود، فقط پاسخ واقعی مدل
+  # نمی‌گیرید). فعال‌سازی: COMPOSE_PROFILES=von را در .env بگذارید (یا
+  # `docker compose --profile von up -d --build` را دستی بزنید) — خالی/
+  # نبودنش یعنی حالت فقط-RAM (پیش‌فرض).
   von:
     build: ./docker/von
     image: jevhub-von:latest
     container_name: jevhub-von
+    profiles: ["von"]
     volumes:
       # وزن‌های ~1.5GB مدل را کش می‌کند تا با هر `up --build` دوباره
       # دانلود نشوند؛ فقط بار اول که کانتینر بالا می‌آید طول می‌کشد.

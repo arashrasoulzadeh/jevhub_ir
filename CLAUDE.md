@@ -91,8 +91,17 @@ need to run the script when you change the *shared shell* (e.g. add a top-nav li
   `/v1/systemone`-compatible System One model documented in `docs/similar-models.html`), backing
   `playground.html`. **No `ports:`** — unreachable except from inside the compose network. Model
   weights (~1.5GB) are cached in the `von-hf-cache` volume and only download on first boot.
+  **Behind the `von` compose profile** (torch + transformers + the weights are RAM-heavy) — a plain
+  `docker compose up -d --build` does **not** start it; you need `docker compose --profile von up -d
+  --build`, or set `COMPOSE_PROFILES=von` in `.env` (Compose reads that var from `.env`
+  automatically). Without it, `playground.html` just falls back to the client-side heuristic — this
+  is the intended low-RAM mode, not a degraded/broken state.
 - **`gate`** (`docker/gate/`) — a small FastAPI service that sits between nginx and `von`; also
-  **no `ports:`**. `jevhub`'s nginx proxies `/api/von/` → `gate:8000/`, gated by an Origin check that
+  **no `ports:`**, and **no `profiles:`** (always starts) and **no `depends_on: von`** — it must come
+  up fine even when `von` isn't running at all. Its `httpx` call to `von` just raises a connection
+  error in that case, caught and turned into a `502` (`von_unreachable`), which `playground.js`
+  treats like any other network failure and falls back to the heuristic — don't add a hard dependency
+  on `von` here or the low-RAM/no-profile mode above breaks. `jevhub`'s nginx proxies `/api/von/` → `gate:8000/`, gated by an Origin check that
   must be written as `if ($http_origin = "https://$http_host")` / `if ($http_origin =
   "http://$http_host")` (plain `=`, two branches, one per scheme) — **not** a `~`/`!~` regex
   containing `$http_host`, because nginx compiles regexes once at startup and never substitutes
