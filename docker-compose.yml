@@ -3,9 +3,28 @@ services:
     build: .
     image: jevhub:latest
     container_name: jevhub
+    depends_on:
+      - von
     ports:
       # فقط روی لوپ‌بک باز می‌شود — nginx سیستم (پورت ۸۰/۴۴۳) reverse proxy
       # است و به همین پورت وصل می‌شود؛ کانتینر مستقیم به اینترنت expose نمی‌شود.
       # APP_PORT از .env می‌آید؛ با `ss -ltn` قبل از اجرا آزاد بودنش را چک کنید.
       - "127.0.0.1:${APP_PORT:-8088}:80"
     restart: unless-stopped
+
+  # مدل Von برای Playground (docs/similar-models.html، جدول جایگزین‌ها).
+  # عمداً هیچ "ports:" ندارد — یعنی هیچ آدرسی روی هاست/اینترنت باز نمی‌شود؛
+  # فقط از داخل شبکه‌ی این docker-compose، با نام سرویس (von:8000)، توسط
+  # nginx کانتینر jevhub قابل‌دسترسی است (location /api/von/).
+  von:
+    build: ./docker/von
+    image: jevhub-von:latest
+    container_name: jevhub-von
+    volumes:
+      # وزن‌های ~1.5GB مدل را کش می‌کند تا با هر `up --build` دوباره
+      # دانلود نشوند؛ فقط بار اول که کانتینر بالا می‌آید طول می‌کشد.
+      - von-hf-cache:/root/.cache/huggingface
+    restart: unless-stopped
+
+volumes:
+  von-hf-cache:
