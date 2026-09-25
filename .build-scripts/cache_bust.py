@@ -46,8 +46,9 @@ def process(path: Path) -> bool:
 
 
 def main():
-    pages = [ROOT / "index.html", ROOT / "examples.html", ROOT / "playground.html", ROOT / "docs.html"]
+    pages = [ROOT / "index.html", ROOT / "examples.html", ROOT / "playground.html", ROOT / "articles.html", ROOT / "docs.html"]
     pages += sorted((ROOT / "docs").glob("*.html"))
+    pages += sorted((ROOT / "articles").glob("*.html"))
     changed = 0
     for p in pages:
         if p.exists() and process(p):

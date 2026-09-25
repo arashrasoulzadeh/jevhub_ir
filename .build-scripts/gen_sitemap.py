@@ -26,10 +26,13 @@ GA_SNIPPET = f'''  <!-- Google tag (gtag.js) -->
 ROOT = Path("/Users/arashrasoulzadeh/Documents/projects/jevhub_ir")
 
 # ---- sitemap.xml ------------------------------------------------------
-pages = ["index.html", "examples.html", "playground.html"]
+pages = ["index.html", "examples.html", "playground.html", "articles.html"]
 for f in sorted(os.listdir(ROOT / "docs")):
     if f.endswith(".html"):
         pages.append("docs/" + f)
+for f in sorted(os.listdir(ROOT / "articles")):
+    if f.endswith(".html"):
+        pages.append("articles/" + f)
 
 urls = "\n".join(f"  <url><loc>{SITE_URL}/{p}</loc></url>" for p in pages)
 (ROOT / "sitemap.xml").write_text(
@@ -92,6 +95,10 @@ def patch(path: Path, own_page: str, with_ga: bool = False):
 patch(ROOT / "index.html", "index.html", with_ga=True)
 patch(ROOT / "examples.html", "examples.html", with_ga=True)
 patch(ROOT / "playground.html", "playground.html", with_ga=True)
+patch(ROOT / "articles.html", "articles.html", with_ga=True)
+for f in sorted(os.listdir(ROOT / "articles")):
+    if f.endswith(".html"):
+        patch(ROOT / "articles" / f, f"articles/{f}", with_ga=True)
 patch(ROOT / "docs.html", "docs/index.html")
 
 # ---- cache-bust every page's assets/css|js references --------------------
