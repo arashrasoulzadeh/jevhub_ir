@@ -148,6 +148,15 @@
 
       <section class="doc-section" id="sdk-python">
                 <p>SDKهای کلاینت پرسش‌ها و پاسخ‌های تایپ‌شده ارائه می‌کنند و با سیاست retry پیش‌فرض خود تلاش مجدد را خودکار انجام می‌دهند. نیازمند Python ≥ ۳٫۱۰.</p>
+        <h3 id="py-install">نصب</h3>
+<textarea class="code" data-lang="bash" hidden>
+uv add typesafe-sdk
+# یا
+pip install typesafe-sdk
+# اختیاری: پشتیبانی HTTP/2
+pip install "typesafe-sdk[http2]"
+</textarea>
+        <p>متغیر محیطی <code>TYPESAFE_API_KEY</code> را تنظیم کنید. آخرین نسخه‌ی بازبینی‌شده‌ی SDK: <code>0.7.3</code> (۲۰۲۶-۱۰-۰۹).</p>
         <div class="code-group">
 <textarea class="code" data-lang="python" data-label="همگام (sync)" hidden>
 from typesafe_sdk import Noul, TypeSafeClient
@@ -176,6 +185,48 @@ async def main() -> None:
 asyncio.run(main())
 </textarea>
         </div>
+        <h3 id="py-typed">پاسخ تایپ‌شده با response_model</h3>
+        <p>از نسخه‌ی ۰٫۷٫۰ متد <code>system_one</code> آرگومان <code>response_model</code> را می‌پذیرد تا پاسخ را روی یک مدل <code>pydantic</code> دلخواه بگیرید. کلاس‌های <code>SystemOneResponse</code> و <code>NoulAnswer</code> برای همین کار هستند. پاسخ‌های پیش‌فرض هم علاوه بر <code>answers</code> دسترسی تفکیک‌شده‌ی <code>nouls</code>، <code>choices</code> و <code>scores</code> دارند.</p>
+<textarea class="code" data-lang="python" hidden>
+from typesafe_sdk import Noul, NoulAnswer, SystemOneResponse, TypeSafeClient
+
+
+class BillingResponse(SystemOneResponse):
+    billing: NoulAnswer
+
+
+with TypeSafeClient() as client:
+    result = client.system_one(
+        "I was charged twice.",
+        {"billing": Noul(instructions="Is this about billing?")},
+        response_model=BillingResponse,
+    )
+    print(result.billing.noul)             # == result.nouls["billing"].noul
+</textarea>
+        <h3 id="py-http2">HTTP/2 و محدودیت اتصال</h3>
+        <p>کلاینت‌ها به‌طور پیش‌فرض از HTTP/1.1 استفاده می‌کنند؛ برای نرخ درخواست بالا همین پیش‌فرض بهتر است. HTTP/2 همه‌ی درخواست‌ها را روی یک اتصال می‌فرستد و برای هم‌زمانی کم تا متوسط (مثلاً پشت پراکسی یا فایروالی که تعداد اتصال را محدود می‌کند) مناسب است. کلاینت پیش‌فرض حداکثر ۱۰۰ اتصال باز می‌کند و اتصال‌های بیکار را ۳۰ ثانیه نگه می‌دارد؛ اگر <code>http_client</code> خودتان را می‌دهید، محدودیت‌ها را خودتان تنظیم کنید.</p>
+<textarea class="code" data-lang="python" hidden>
+import httpx2
+from typesafe_sdk import TypeSafeClient
+
+# HTTP/2 (نیازمند typesafe-sdk[http2])
+client = TypeSafeClient(http_client=httpx2.Client(http2=True))
+
+# محدودیت اتصال سفارشی
+limits = httpx2.Limits(max_connections=200, max_keepalive_connections=200, keepalive_expiry=30)
+client = TypeSafeClient(http_client=httpx2.Client(limits=limits))
+</textarea>
+        <h3 id="py-changelog">تغییرات اخیر SDK</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>نسخه</th><th>تاریخ</th><th>خلاصه</th></tr></thead>
+          <tbody>
+            <tr><td class="ltr-cell">0.7.3</td><td class="ltr-cell">2026-10-09</td><td>رفع کرش کلاینت async هنگام اتصال‌های هم‌زمان TLS با <code>truststore&lt;=0.10.4</code>؛ اعتبارسنجی بیشتر درخواست؛ نگه‌داشتن اتصال‌های pool به‌مدت ۳۰ ثانیه؛ بخش Performance در مستندات</td></tr>
+            <tr><td class="ltr-cell">0.7.2</td><td class="ltr-cell">2026-09-26</td><td>افزودن extra با نام <code>http2</code> به بسته</td></tr>
+            <tr><td class="ltr-cell">0.7.1</td><td class="ltr-cell">2026-09-21</td><td>اعتبارسنجی زودهنگام کلید API و حذف مقدار آن از خطاهای لاگ‌شده؛ مثال‌های AI gateway</td></tr>
+            <tr><td class="ltr-cell">0.7.0</td><td class="ltr-cell">2026-09-18</td><td><b>تغییر ناسازگار:</b> کتابخانه‌ی ser/de از <code>msgspec</code> به <code>pydantic</code> رفت؛ آرگومان <code>response_model</code>؛ رفع سریال‌سازی زیرکلاس‌های <code>str</code></td></tr>
+            <tr><td class="ltr-cell">0.6.0</td><td class="ltr-cell">2026-09-15</td><td><b>تغییر ناسازگار:</b> <code>Score.criteria</code> حالا دنباله‌ی مرتب است، نه دیکشنری با کلید عددی</td></tr>
+          </tbody>
+        </table></div>
         <h3 id="py-const">متغیرهای محیطی و پیش‌فرض‌ها</h3>
         <div class="table-wrap"><table>
           <thead><tr><th>ثابت</th><th>مقدار</th><th>توضیح</th></tr></thead>
