@@ -163,7 +163,7 @@ def footer() -> str:
         </ul>
       </div>
       <div class="footer-bottom">
-        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.13.0</code></span>
+        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.14.0</code></span>
         <span>بر اساس مستندات رسمی بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
         <span>ساخته‌شده با Claude · به دستور <a href="https://github.com/arashrasoulzadeh" target="_blank" rel="noopener">آرش رسول‌زاده</a> · <a href="https://github.com/arashrasoulzadeh/jevhub_ir" target="_blank" rel="noopener">کد منبع در GitHub</a></span>
       </div>
@@ -246,7 +246,7 @@ PAGE = '''<!doctype html>
         <p>{desc_html}</p>
         <div class="meta-row">
           <span class="update-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>آخرین به‌روزرسانی: <b data-date="docsUpdated"></b></span>
-          <span class="src-link">مدل: <code data-cfg="model">jev-1.13.0</code></span>
+          <span class="src-link">مدل: <code data-cfg="model">jev-1.14.0</code></span>
           <span class="src-link">منبع بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
           <a class="src-link" href="{source_url}" target="_blank" rel="noopener">منبع انگلیسی <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a>
         </div>

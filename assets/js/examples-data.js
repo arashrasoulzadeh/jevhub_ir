@@ -1023,4 +1023,212 @@ def filter_answer(claims_with_citations: list[dict], source_document: str) -> li
     ],
     sourceUrl: "https://docs.typesafe.ai/cookbooks/citation_check",
   },
+  /* ------------------------------------------------------------------ 08 */
+  {
+    id: "twitch-chat-filter",
+    title: "فیلتر چت زنده‌ی Twitch",
+    summary: "هر پیام چت یک درخواست با سه پرسش؛ سپس کد ساده تصمیم می‌گیرد پیام نمایش داده شود، برجسته شود، پنهان یا محو شود.",
+    level: 2,
+    primitives: ["choice", "noul"],
+    tags: ["مدیریت محتوا", "استریم", "پردازش موازی"],
+    pattern: "Speculative fan-out",
+    added: "2026-10-20",
+    readTime: 6,
+    scenario:
+      "چت استریم سریع‌تر از آن است که بشود خواند. فهرست کلمات ممنوعه لینک‌های اسپم را می‌گیرد، اما «برو چپ، پشت درخت صندوق گنج هست» هیچ کلمه‌ی بدی ندارد و لو دادن داستان بازی هم ندارد. هر پیام را همراه عنوان استریم و نام بازی به Jev می‌دهیم و سه چیز می‌پرسیم: نوع پیام، سمی بودن و لو دادن داستان. قواعد نمایش در کد می‌ماند، نه در پرامپت.",
+    steps: [
+      "برای هر پیام یک درخواست بفرستید؛ state شامل پیام، عنوان استریم و بازی است.",
+      "سه پرسش را در همان درخواست بپرسید: یک Choice برای نوع پیام و دو Noul برای سمی بودن و اسپویل.",
+      "تابع decide() پاسخ‌ها را به show، highlight، hide یا blur تبدیل می‌کند.",
+      "برای تغییر یک قاعده فقط decide() دوباره اجرا می‌شود؛ درخواست جدیدی به Jev لازم نیست.",
+      "چند پیام را هم‌زمان (مثلاً تا هشت تا) پردازش کنید.",
+    ],
+    code: [
+      {
+        label: "Python",
+        lang: "python",
+        source: `from concurrent.futures import ThreadPoolExecutor
+from typesafe_sdk import Choice, Noul, TypeSafeClient
+
+client = TypeSafeClient()
+
+QUESTIONS = {
+    "category": Choice(
+        instructions="What kind of chat message is \`message\`?",
+        criteria={
+            "question": "The viewer asks the streamer or chat a question",
+            "gameplay_tip": "Unrequested advice on how to play the game",
+            "spam": "Ads, links, repeated text or copy-pasta",
+            "chatter": "Ordinary conversation or reactions",
+        },
+    ),
+    "toxic": Noul(instructions="Is \`message\` insulting, hateful or harassing?"),
+    "spoiler": Noul(instructions="Does \`message\` spoil the plot or a surprise of \`game\`?"),
+}
+
+
+def classify(message: str, title: str, game: str):
+    response = client.system_one(
+        state={"message": message, "stream_title": title, "game": game},
+        questions=QUESTIONS,
+    )
+    a = response.answers
+    return {
+        "category": a["category"].choice,
+        "toxic": a["toxic"].noul,
+        "spoiler": a["spoiler"].noul,
+    }
+
+
+def decide(r: dict) -> str:
+    # قواعد نمایش فقط این‌جاست؛ تغییرشان درخواست جدیدی لازم ندارد
+    if r["toxic"] > 0.8 or r["category"] in ("spam", "gameplay_tip"):
+        return "hide"
+    if r["spoiler"] > 0.7:
+        return "blur"
+    if r["category"] == "question":
+        return "highlight"
+    return "show"
+
+
+def filter_chat(messages: list[str], title: str, game: str) -> list[str]:
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(lambda m: classify(m, title, game), messages))
+    return [decide(r) for r in results]
+`,
+      },
+    ],
+    notes: [
+      "هر پیام در درخواست جدا می‌رود تا پاسخ هر کدام به پیام‌های دیگر وابسته نشود؛ سه پرسش همان‌جا با هم، موازی و در یک فراخوانی ارزیابی می‌شوند.",
+      "آستانه‌های ۰٫۸ و ۰٫۷ فقط نمونه‌اند؛ روی چت واقعی خودتان تنظیمشان کنید و برای موارد مرزی از confidence و مسیریابی با آستانه کمک بگیرید.",
+      "این مثال ساده‌شده و الهام‌گرفته از cookbook رسمی است؛ کد و ویدئوی کامل آن (از جمله افزونه‌ی کروم) را در منبع رسمی ببینید.",
+    ],
+    sourceUrl: "https://docs.typesafe.ai/cookbooks/twitch_chat_filter",
+    en: {
+      title: "Live Twitch chat filter",
+      summary: "One request per chat message with three questions; plain code then decides whether to show, highlight, hide or blur it.",
+      tags: ["moderation", "streaming", "concurrency"],
+      scenario:
+        "Chat moves faster than anyone can read. A word list catches spam links, but \"go left, there's a treasure box behind the tree\" has no bad words and neither does a plot twist. Send each message to Jev with the stream title and game and ask three things: what kind of message it is, whether it is toxic, and whether it spoils the game. The display rules stay in code, not in a prompt.",
+      steps: [
+        "Send one request per message; the state holds the message, stream title and game.",
+        "Ask three questions in the same request: a Choice for the message type and two Noul for toxicity and spoilers.",
+        "decide() turns the answers into show, highlight, hide or blur.",
+        "To change a rule, only decide() runs again; no new request to Jev.",
+        "Process several messages concurrently (for example up to eight).",
+      ],
+      notes: [
+        "Each message is its own request so answers don't depend on neighbouring messages; the three questions are evaluated together, in parallel, in one call.",
+        "The 0.8 and 0.7 thresholds are examples; tune them on your own chat and use confidence for borderline cases.",
+        "This is a simplified example inspired by the official cookbook; see the official page for the full code and the Chrome-extension demo video.",
+      ],
+    },
+  },
+  /* ------------------------------------------------------------------ 09 */
+  {
+    id: "find-in-image-box",
+    title: "پیدا کردن محل یک شیء در تصویر با Box",
+    summary: "یک پرسش Box کادر دور هدف را برمی‌گرداند و یک Noul کنارش می‌گوید اصلاً هدف در تصویر هست یا نه. (آزمایشی)",
+    level: 3,
+    primitives: ["noul", "box"],
+    tags: ["تصویر", "بینایی", "آزمایشی"],
+    added: "2026-10-20",
+    readTime: 6,
+    scenario:
+      "می‌خواهید لیوان روی میز آشپزخانه را در یک عکس پیدا کنید و برش بزنید. پاسخ Box همیشه یک کادر است و پاسخ «پیدا نشد» ندارد؛ پس در همان درخواست یک Noul هم می‌پرسیم که هدف در تصویر هست یا نه و اگر پاسخش پایین بود کادر را نادیده می‌گیریم. تصاویر و Box هنوز آزمایشی‌اند و هدر مخصوص می‌خواهند.",
+    steps: [
+      "هدر TypeSafe-Danger-Zone-Images: true را بفرستید و مدل jev-preview را انتخاب کنید (Box به Jev 1.14 نیاز دارد).",
+      "تصویر را بسازید (PNG یا JPEG، ضلع‌ها بین ۲۸۰ تا ۱۵۶۸ پیکسل) و در state بگذارید.",
+      "یک Noul برای وجود هدف و یک Box برای محل آن بپرسید.",
+      "اگر احتمال Noul بالاست، لبه‌ها را (کسری از عرض و ارتفاع) در ابعاد تصویر ضرب کنید.",
+    ],
+    code: [
+      {
+        label: "TypeScript",
+        lang: "ts",
+        source: `import { openAsBlob } from "node:fs";
+import { box, image, noul, TypeSafeClient } from "@typesafe-ai/sdk";
+
+const client = new TypeSafeClient({
+  defaultHeaders: { "TypeSafe-Danger-Zone-Images": "true" },
+});
+
+const { answers } = await client.systemOne({
+  state: { photo: image(await openAsBlob("kitchen.jpg")) },
+  questions: {
+    mug_visible: noul("Is there a coffee mug in \`photo\`?"),
+    mug: box("the coffee mug in \`photo\`"),
+  },
+  model: "jev-preview",
+});
+
+if (answers.mug_visible.noul > 0.7) {
+  const { top, bottom, left, right } = answers.mug.box;
+  // مقادیر ۰ تا ۱ هستند؛ در عرض/ارتفاع تصویر (پیکسل) ضرب کنید تا برش بزنید
+  console.log({ left, top, right, bottom, confidence: answers.mug.confidence });
+}
+`,
+      },
+      {
+        label: "cURL",
+        lang: "bash",
+        source: `curl https://api.typesafe.ai/v1/systemone \\
+  -H "Authorization: Bearer $TYPESAFE_API_KEY" \\
+  -H "TypeSafe-Danger-Zone-Images: true" \\
+  -F 'request={
+    "model": "jev-preview",
+    "state": {"photo": "6e1d0b7c-kitchen"},
+    "assets": {"6e1d0b7c-kitchen": {"type": "image", "part": "kitchen-photo"}},
+    "questions": {
+      "mug_visible": {"type": "noul", "instructions": "Is there a coffee mug in \`photo\`?"},
+      "mug": {"type": "box", "instructions": "the coffee mug in \`photo\`"}
+    }
+  };type=application/json' \\
+  -F 'kitchen-photo=@kitchen.jpg;type=image/jpeg'
+`,
+      },
+    ],
+    response: `
+{
+  "model": "jev-1.14.0",
+  "answers": {
+    "mug_visible": { "type": "noul", "noul": 0.97 },
+    "mug": {
+      "type": "box",
+      "box": { "top": 0.25, "bottom": 0.82, "left": 0.44, "right": 0.84 },
+      "confidence": 0.92
+    }
+  },
+  "usage": { "input_tokens": 312, "output_tokens": 26 }
+}
+`,
+    responseNote:
+      "خروجی نمایشی. هر لبه کسری از اندازه‌ی تصویر است که از گوشه‌ی بالا-چپ سنجیده می‌شود؛ همیشه left < right و top < bottom.",
+    notes: [
+      "اگر confidence پایین بود، کادر را کمی بزرگ‌تر کنید یا روی برش با رزولوشن بالاتر دوباره بپرسید.",
+      "تصویر باید پیش از ارسال صاف (چرخش پیکسل‌ها) و در محدوده‌ی اندازه‌ی مجاز باشد؛ API متادیتای EXIF را اعمال نمی‌کند.",
+      "جزئیات و محدودیت‌ها در صفحه‌های «تصاویر» و «Box» مستندات این سایت آمده است.",
+    ],
+    sourceUrl: "https://docs.typesafe.ai/primitives/box",
+    en: {
+      title: "Locate an object in an image with Box",
+      summary: "A Box question returns the box around the target, and a Noul next to it says whether the target is in the image at all. (experimental)",
+      tags: ["images", "vision", "experimental"],
+      scenario:
+        "You want to find the mug on a kitchen counter in a photo and crop it. A Box answer is always a box and has no \"not found\" answer, so the same request also asks a Noul whether the target is in the image and ignores the box when that answer is low. Images and Box are still experimental and need a special header.",
+      steps: [
+        "Send the TypeSafe-Danger-Zone-Images: true header and choose the jev-preview model (Box needs Jev 1.14).",
+        "Create the image (PNG or JPEG, each side 280 to 1568 pixels) and put it in the state.",
+        "Ask a Noul for presence and a Box for location.",
+        "If the Noul probability is high, multiply the edges (fractions of width and height) by the image size.",
+      ],
+      notes: [
+        "If confidence is low, pad the box slightly or ask again on a higher-resolution crop.",
+        "Rotate the pixels upright and keep the size within limits before sending; the API doesn't apply EXIF orientation.",
+        "Details and limits are on the Images and Box pages of this site.",
+      ],
+      responseNote:
+        "Illustrative output. Each edge is a fraction of the image size measured from the top-left corner; left < right and top < bottom always.",
+    },
+  },
 ];

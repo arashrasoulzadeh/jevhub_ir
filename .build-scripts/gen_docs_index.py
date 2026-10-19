@@ -137,7 +137,7 @@ PAGE = f'''<!doctype html>
         <p class="lead reveal" style="max-width:640px">۲۶ صفحه، هر کدام مستقل و قابل لینک‌دهی: از شروع سریع تا مرجع کامل API و SDKها. هر صفحه تاریخ و نسخه‌ی مدل خودش را نشان می‌دهد.</p>
         <div class="hero-meta reveal" style="margin-top:22px">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>به‌روزرسانی: <b data-date="docsUpdated"></b></span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>مدل: <code data-cfg="model">jev-1.13.0</code></span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>مدل: <code data-cfg="model">jev-1.14.0</code></span>
         </div>
         <div class="hero-actions reveal" style="margin-top:26px">
           <a class="btn btn-primary" href="{first_slug}.html">شروع از معرفی
@@ -180,7 +180,7 @@ PAGE = f'''<!doctype html>
         </ul>
       </div>
       <div class="footer-bottom">
-        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.13.0</code></span>
+        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.14.0</code></span>
         <span>بر اساس مستندات رسمی بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
         <span>ساخته‌شده با Claude · به دستور <a href="https://github.com/arashrasoulzadeh" target="_blank" rel="noopener">آرش رسول‌زاده</a> · <a href="https://github.com/arashrasoulzadeh/jevhub_ir" target="_blank" rel="noopener">کد منبع در GitHub</a></span>
       </div>

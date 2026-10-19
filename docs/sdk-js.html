@@ -13,7 +13,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SDK جاوااسکریپت / TypeScript | مستندات Jev | جِو هاب</title>
-  <meta name="description" content="SDK جاوااسکریپت و TypeScript برای TypeSafe AI؛ نیازمند Node.js ۲۰ یا جدیدتر.">
+  <meta name="description" content="SDK جاوااسکریپت و TypeScript برای TypeSafe AI؛ نیازمند Node.js ۲۲ یا جدیدتر.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://jevhub.ir/docs/sdk-js.html">
   <meta name="theme-color" content="#07080f">
@@ -22,11 +22,11 @@
   <meta property="og:site_name" content="جِو هاب">
   <meta property="og:locale" content="fa_IR">
   <meta property="og:title" content="SDK جاوااسکریپت / TypeScript | مستندات Jev">
-  <meta property="og:description" content="SDK جاوااسکریپت و TypeScript برای TypeSafe AI؛ نیازمند Node.js ۲۰ یا جدیدتر.">
+  <meta property="og:description" content="SDK جاوااسکریپت و TypeScript برای TypeSafe AI؛ نیازمند Node.js ۲۲ یا جدیدتر.">
   <meta property="og:url" content="https://jevhub.ir/docs/sdk-js.html">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="SDK جاوااسکریپت / TypeScript | مستندات Jev">
-  <meta name="twitter:description" content="SDK جاوااسکریپت و TypeScript برای TypeSafe AI؛ نیازمند Node.js ۲۰ یا جدیدتر.">
+  <meta name="twitter:description" content="SDK جاوااسکریپت و TypeScript برای TypeSafe AI؛ نیازمند Node.js ۲۲ یا جدیدتر.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -37,9 +37,9 @@
     "@context": "https://schema.org",
     "@type": "TechArticle",
     "headline": "SDK جاوااسکریپت / TypeScript",
-    "description": "SDK جاوااسکریپت و TypeScript برای TypeSafe AI؛ نیازمند Node.js ۲۰ یا جدیدتر.",
+    "description": "SDK جاوااسکریپت و TypeScript برای TypeSafe AI؛ نیازمند Node.js ۲۲ یا جدیدتر.",
     "inLanguage": "fa",
-    "dateModified": "2026-09-23",
+    "dateModified": "2026-10-20",
     "author": {"@type": "Organization", "name": "جِو هاب"},
     "publisher": {"@type": "Organization", "name": "جِو هاب"},
     "mainEntityOfPage": "https://jevhub.ir/docs/sdk-js.html",
@@ -105,6 +105,8 @@
         <a href="choice.html" data-slug="choice">Choice</a>
         <a href="score.html" data-slug="score">Score</a>
         <a href="noul.html" data-slug="noul">Noul</a>
+        <a href="box.html" data-slug="box">Box</a>
+        <a href="images.html" data-slug="images">تصاویر</a>
         <a href="advanced.html" data-slug="advanced">پیشرفته: ساختار</a>
       </div>
       <div class="side-group"><h6>اطمینان</h6>
@@ -137,10 +139,10 @@
       <div class="doc-hero reveal">
         <span class="eyebrow"><span class="dot"></span> مرجع › مستندات Jev</span>
         <h1 style="margin-top:14px">SDK جاوااسکریپت / TypeScript</h1>
-        <p>SDK جاوااسکریپت و TypeScript برای TypeSafe AI؛ نیازمند Node.js ۲۰ یا جدیدتر.</p>
+        <p>SDK جاوااسکریپت و TypeScript برای TypeSafe AI؛ نیازمند Node.js ۲۲ یا جدیدتر.</p>
         <div class="meta-row">
           <span class="update-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>آخرین به‌روزرسانی: <b data-date="docsUpdated"></b></span>
-          <span class="src-link">مدل: <code data-cfg="model">jev-1.13.0</code></span>
+          <span class="src-link">مدل: <code data-cfg="model">jev-1.14.0</code></span>
           <span class="src-link">منبع بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
           <a class="src-link" href="https://docs.typesafe.ai/sdk/javascript" target="_blank" rel="noopener">منبع انگلیسی <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a>
         </div>
@@ -204,14 +206,73 @@ console.log(response.answers.category.choice); // تایپ: "billing" | "technic
       
       
       
+        <h3 id="js-images">تصاویر و Box (آزمایشی)</h3>
+        <p>تصویر را با <code>image()</code> از بایت فایل یا یک <code>Blob</code> (مثل <code>File</code>) یا با <code>Image.fromBase64()</code> بسازید. فقط PNG و JPEG؛ قالب را API از بایت‌ها تشخیص می‌دهد و بقیه (مثل WebP و GIF) را با <code>BadRequestError</code> رد می‌کند. پشتیبانی تصویر آزمایشی است و با هدر <code>TypeSafe-Danger-Zone-Images: true</code> فعال می‌شود (در <code>defaultHeaders</code> کلاینت یا گزینه‌ی <code>headers</code> یک فراخوانی). سه روش استفاده، قابل ترکیب با هم:</p>
+<textarea class="code" data-lang="ts" data-title="۱) تصویر مستقیم در محتوا" hidden>
+import { openAsBlob } from "node:fs";
+import { image, noul, score, TypeSafeClient } from "@typesafe-ai/sdk";
+
+const client = new TypeSafeClient({
+  defaultHeaders: { "TypeSafe-Danger-Zone-Images": "true" },
+});
+const photo = image(await openAsBlob("returns/RMA-1042.jpg"));
+
+const { answers } = await client.systemOne({
+  state: { claim: "The mug arrived with a chipped rim.", photo },
+  questions: {
+    damaged: noul("Is the product in the photo damaged?"),
+    severity: score("How severe is the damage?", ["none", "cosmetic", "unusable"]),
+  },
+});
+</textarea>
+<textarea class="code" data-lang="ts" data-title="۲) تصویر داخل متن با withAssets" hidden>
+import { image, noul, TypeSafeClient, withAssets } from "@typesafe-ai/sdk";
+
+const upload = image(form.get("photo") as File);
+const catalog = image(await (await fetch(catalogPhotoUrl)).blob());
+
+const { answers } = await client.systemOne({
+  state: withAssets`A seller uploaded ${upload} for a listing whose catalog photo is ${catalog}.`,
+  questions: {
+    sameProduct: noul(withAssets`Does ${upload} show the same product as ${catalog}?`),
+  },
+});
+// برای فهرست تصاویر: withAssets.join(uploads, ", ")
+</textarea>
+<textarea class="code" data-lang="ts" data-title="۳) مرجع دلخواه با assets" hidden>
+const { answers } = await client.systemOne({
+  state: "A customer returned <delivered>. The catalog photo is <catalog>.",
+  questions: { matches: noul("Is <delivered> the product shown in <catalog>?") },
+  assets: {
+    "<delivered>": image(await readFile("returns/RMA-1042.jpg")),
+    "<catalog>": image(await readFile("catalog/mug.png")),
+  },
+});
+</textarea>
+        <p>هر تصویر یک بار فرستاده می‌شود، هرچند بار که استفاده شود. تصویر در template literal بدون برچسب (مثل <code>`Compare ${upload}`</code>) پیش از ارسال با <code>TypeSafeError</code> رد می‌شود؛ هر نام در <code>assets</code> هم باید در درخواست بیاید. از جداکننده‌های متمایز مثل <code>&lt;delivered&gt;</code> استفاده کنید.</p>
+        <p>پرسش <code>box</code> محل چیزی را پیدا می‌کند؛ <code>box</code> پاسخ لبه‌ها را به‌صورت کسری از ارتفاع (<code>top</code>، <code>bottom</code>) و عرض (<code>left</code>، <code>right</code>) دارد و <code>confidence</code> وقتی API گزارش نکند <code>null</code> است. برای <code>box</code> مدل <code>jev-preview</code> را بدهید. جزئیات: <a href="box.html">Box</a>.</p>
+<textarea class="code" data-lang="ts" hidden>
+import { box, image, TypeSafeClient } from "@typesafe-ai/sdk";
+
+const { answers } = await client.systemOne({
+  state: image(await openAsBlob("returns/RMA-1042.jpg")),
+  questions: { damage: box("The damaged area of the product") },
+  model: "jev-preview",
+});
+const { top, bottom, left, right } = answers.damage.box;
+</textarea>
+        <h3 id="js-compression">فشرده‌سازی درخواست</h3>
+        <p>کلاینت بدنه‌های ۱ KiB و بزرگ‌تر را با zstd فشرده می‌کند؛ بدنه‌های کوچک‌تر در یک segment TCP جا می‌شوند و بدون فشرده‌سازی می‌روند. zstd به Node.js ‏۲۲٫۱۵ یا جدیدتر نیاز دارد و روی runtimeهای دیگر همه‌ی بدنه‌ها بدون فشرده‌سازی فرستاده می‌شوند. برای خاموش کردن (مثلاً APIای که بدنه‌ی فشرده نمی‌پذیرد) <code>new TypeSafeClient({ compression: false })</code> بدهید.</p>
         <h3 id="js-changelog">تغییرات اخیر SDK</h3>
         <div class="table-wrap"><table>
           <thead><tr><th>نسخه</th><th>تاریخ</th><th>خلاصه</th></tr></thead>
           <tbody>
+            <tr><td class="ltr-cell">0.7.0</td><td class="ltr-cell">2026-10-14</td><td><b>تغییرهای ناسازگار:</b> Node.js نسخه‌ی ۲۲ یا بالاتر لازم است و انواع payload درخواست دیگر export نمی‌شوند. ویژگی‌ها: تصاویر (آزمایشی، با هدر <code>TypeSafe-Danger-Zone-Images: true</code>) با <code>image()</code> یا <code>Image.fromBase64()</code>، <code>withAssets</code> و <code>withAssets.join</code> و <code>assets</code> نام‌دار؛ پرسش‌های <code>box</code> (با مدل <code>jev-preview</code>)؛ فشرده‌سازی zstd بدنه‌های ۱ KiB و بزرگ‌تر روی Node.js ‏۲۲٫۱۵+ (با <code>compression: false</code> خاموش می‌شود). رفع باگ: تعداد توکن null در usage، اعتبارسنجی بیشتر، رد شدن promise برای درخواست نامعتبر به‌جای throw، پذیرش لیست criteria ساخته‌شده در runtime و رفع unhandled rejection هنگام timeout/abort</td></tr>
             <tr><td class="ltr-cell">0.6.0</td><td class="ltr-cell">2026-09-15</td><td><b>تغییر ناسازگار:</b> <code>Score.criteria</code> حالا آرایه‌ی مرتب است، نه آبجکت با کلید عددی</td></tr>
             <tr><td class="ltr-cell">0.5.7</td><td class="ltr-cell">2026-09-11</td><td>اولین انتشار عمومی SDK جاوااسکریپت/تایپ‌اسکریپت</td></tr>
           </tbody>
         </table></div>
+      
       </section>
 
   <div class="pager">
@@ -262,14 +323,14 @@ console.log(response.answers.category.choice); // تایپ: "billing" | "technic
         </ul>
       </div>
       <div class="footer-bottom">
-        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.13.0</code></span>
+        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.14.0</code></span>
         <span>بر اساس مستندات رسمی بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
         <span>ساخته‌شده با Claude · به دستور <a href="https://github.com/arashrasoulzadeh" target="_blank" rel="noopener">آرش رسول‌زاده</a> · <a href="https://github.com/arashrasoulzadeh/jevhub_ir" target="_blank" rel="noopener">کد منبع در GitHub</a></span>
       </div>
     </div>
   </footer>
 
-  <script src="../assets/js/config.js?v=74fcbdd8"></script>
+  <script src="../assets/js/config.js?v=7032d24f"></script>
   <script src="../assets/js/main.js?v=c4847903"></script>
 </body>
 </html>

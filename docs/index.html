@@ -39,7 +39,7 @@
     "name": "مستندات Jev",
     "description": "فهرست کامل مستندات فارسی Jev: شروع سریع، مفاهیم System One و State، پرسش‌های Choice و Score و Noul، اطمینان، الگوها، مدل‌ها، مرجع API و SDKها — هر بخش در صفحه‌ی جداگانه‌ی خودش.",
     "inLanguage": "fa",
-    "dateModified": "2026-09-23",
+    "dateModified": "2026-10-20",
     "url": "https://jevhub.ir/docs/index.html",
     "isPartOf": {"@type": "WebSite", "name": "جِو هاب", "url": "https://jevhub.ir/index.html"}
   }
@@ -82,7 +82,7 @@
         <p class="lead reveal" style="max-width:640px">۲۶ صفحه، هر کدام مستقل و قابل لینک‌دهی: از شروع سریع تا مرجع کامل API و SDKها. هر صفحه تاریخ و نسخه‌ی مدل خودش را نشان می‌دهد.</p>
         <div class="hero-meta reveal" style="margin-top:22px">
           <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>به‌روزرسانی: <b data-date="docsUpdated"></b></span>
-          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>مدل: <code data-cfg="model">jev-1.13.0</code></span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>مدل: <code data-cfg="model">jev-1.14.0</code></span>
         </div>
         <div class="hero-actions reveal" style="margin-top:26px">
           <a class="btn btn-primary" href="intro.html">شروع از معرفی
@@ -114,6 +114,8 @@
           <a class="mini-card" href="choice.html"><h4>Choice</h4><p>انتخاب یک گزینه از مجموعه‌ای تعریف‌شده؛ همراه با احتمال هر گزینه و اطمینان.</p></a>
           <a class="mini-card" href="score.html"><h4>Score</h4><p>رتبه‌دهی محتوا روی سطوح مرتب و توصیفی؛ همراه با score، احتمال هر سطح و اطمینان.</p></a>
           <a class="mini-card" href="noul.html"><h4>Noul</h4><p>یک پرسش بله/خیر که احتمال «بله» بودن پاسخ را برمی‌گرداند.</p></a>
+          <a class="mini-card" href="box.html"><h4>Box</h4><p>نوع پرسش System One برای پیدا کردن محل چیزی در یک تصویر. پاسخ چهار لبه‌ی کادری دور آن است، به‌صورت کسری از عرض و ارتفاع تصویر.</p></a>
+          <a class="mini-card" href="images.html"><h4>تصاویر</h4><p>ارسال تصویر در درخواست System One: در state، داخل instructions یک پرسش و به‌عنوان معیارهایی که پرسش در برابرشان سنجیده می‌شود.</p></a>
           <a class="mini-card" href="advanced.html"><h4>پیشرفته: ساختار</h4><p>دستورالعمل‌ها، گزینه‌های Choice، سطوح Score و معیارهای Noul همگی ساختار JSON می‌پذیرند.</p></a>
         </div>
         <div class="section-head" style="text-align:start;margin:0 0 18px"><h2 style="font-size:1.3rem">اطمینان</h2></div>
@@ -139,7 +141,7 @@
           <a class="mini-card" href="api.html"><h4>مرجع HTTP API</h4><p>مرجع کامل endpoint ارزیابی TypeSafe.</p></a>
           <a class="mini-card" href="errors.html"><h4>خطاها و محدودیت نرخ</h4><p>خطاها از کدهای وضعیت استاندارد HTTP با بدنه‌ی JSON توصیفی استفاده می‌کنند.</p></a>
           <a class="mini-card" href="sdk-python.html"><h4>SDK پایتون</h4><p>نصب SDK پایتون TypeSafe و شروع با فراخوانی‌های همگام یا ناهمگام.</p></a>
-          <a class="mini-card" href="sdk-js.html"><h4>SDK جاوااسکریپت</h4><p>SDK جاوااسکریپت و TypeScript برای TypeSafe AI؛ نیازمند Node.js ۲۰ یا جدیدتر.</p></a>
+          <a class="mini-card" href="sdk-js.html"><h4>SDK جاوااسکریپت</h4><p>SDK جاوااسکریپت و TypeScript برای TypeSafe AI؛ نیازمند Node.js ۲۲ یا جدیدتر.</p></a>
           <a class="mini-card" href="agent-skill.html"><h4>Agent skill</h4><p>اسکیل آماده برای Claude Code، Codex و دیگر محیط‌های ایجنت.</p></a>
           <a class="mini-card" href="cookbooks.html"><h4>Cookbookها</h4><p>دستورالعمل‌های سرتاسری رسمی که TypeSafe را در مسائل واقعی نشان می‌دهند.</p></a>
           <a class="mini-card" href="faq.html"><h4>سؤالات متداول</h4><p>پاسخ کوتاه سؤالاتی که بیشتر درباره‌ی Jev و همین سایت (جِو هاب) پرسیده می‌شود. برای جزئیات بیشتر هر بخش، به صفحه‌ی مرتبط مستندات مراجعه کنید.</p></a>
@@ -173,14 +175,14 @@
         </ul>
       </div>
       <div class="footer-bottom">
-        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.13.0</code></span>
+        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.14.0</code></span>
         <span>بر اساس مستندات رسمی بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
         <span>ساخته‌شده با Claude · به دستور <a href="https://github.com/arashrasoulzadeh" target="_blank" rel="noopener">آرش رسول‌زاده</a> · <a href="https://github.com/arashrasoulzadeh/jevhub_ir" target="_blank" rel="noopener">کد منبع در GitHub</a></span>
       </div>
     </div>
   </footer>
 
-  <script src="../assets/js/config.js?v=74fcbdd8"></script>
+  <script src="../assets/js/config.js?v=7032d24f"></script>
   <script src="../assets/js/main.js?v=c4847903"></script>
 </body>
 </html>

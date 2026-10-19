@@ -11,16 +11,16 @@
  */
 window.JEV_SITE = {
   // آخرین به‌روزرسانی ترجمه‌ی فارسی مستندات (میلادی، YYYY-MM-DD)
-  docsUpdated: "2026-10-11",
+  docsUpdated: "2026-10-20",
   // تاریخ آخرین بازبینی مستندات رسمی انگلیسی که این ترجمه بر اساس آن است
-  sourceReviewed: "2026-10-11",
+  sourceReviewed: "2026-10-20",
   // نسخه‌ی فعلی مدل
-  model: "jev-1.13.0",
+  model: "jev-1.14.0",
   alias: "jev-latest",
   sourceUrl: "https://docs.typesafe.ai",
   // آخرین باری که جدول «جایگزین‌ها» (مدل‌های مشابه) بازبینی شد — این بازار
   // به‌سرعت عوض می‌شود، این تاریخ را جدا از docsUpdated نگه می‌داریم
-  similarModelsUpdated: "2026-10-11",
+  similarModelsUpdated: "2026-09-24",
   // کلید عمومی (site key) ARCaptcha (arcaptcha.ir) برای کپچای Playground —
   // نه Cloudflare Turnstile، چون این پروژه روی ArvanCloud میزبانی می‌شود.
   // این مقدار محرمانه نیست، برخلاف secret key که فقط در

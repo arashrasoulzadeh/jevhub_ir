@@ -39,7 +39,7 @@
     "headline": "Cookbookها",
     "description": "دستورالعمل‌های سرتاسری رسمی که TypeSafe را در مسائل واقعی نشان می‌دهند.",
     "inLanguage": "fa",
-    "dateModified": "2026-09-23",
+    "dateModified": "2026-10-20",
     "author": {"@type": "Organization", "name": "جِو هاب"},
     "publisher": {"@type": "Organization", "name": "جِو هاب"},
     "mainEntityOfPage": "https://jevhub.ir/docs/cookbooks.html",
@@ -105,6 +105,8 @@
         <a href="choice.html" data-slug="choice">Choice</a>
         <a href="score.html" data-slug="score">Score</a>
         <a href="noul.html" data-slug="noul">Noul</a>
+        <a href="box.html" data-slug="box">Box</a>
+        <a href="images.html" data-slug="images">تصاویر</a>
         <a href="advanced.html" data-slug="advanced">پیشرفته: ساختار</a>
       </div>
       <div class="side-group"><h6>اطمینان</h6>
@@ -140,7 +142,7 @@
         <p>دستورالعمل‌های سرتاسری رسمی که TypeSafe را در مسائل واقعی نشان می‌دهند.</p>
         <div class="meta-row">
           <span class="update-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>آخرین به‌روزرسانی: <b data-date="docsUpdated"></b></span>
-          <span class="src-link">مدل: <code data-cfg="model">jev-1.13.0</code></span>
+          <span class="src-link">مدل: <code data-cfg="model">jev-1.14.0</code></span>
           <span class="src-link">منبع بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
           <a class="src-link" href="https://docs.typesafe.ai/cookbooks" target="_blank" rel="noopener">منبع انگلیسی <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a>
         </div>
@@ -160,8 +162,17 @@
           <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/hierarchical_classification" target="_blank" rel="noopener"><h4>طبقه‌بندی سلسله‌مراتبی</h4><p>beam search موازی روی احتمال‌های Choice در سلسله‌مراتب عمیق.</p></a>
           <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/sde_cascade" target="_blank" rel="noopener"><h4>آبشار SDE</h4><p>استخراج داده‌ی ساختاریافته با کیفیت نزدیک به مدل استدلالی بزرگ و هزینه‌ی بسیار کمتر.</p></a>
           <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/entity_alignment" target="_blank" rel="noopener"><h4>هم‌ترازی موجودیت‌ها</h4><p>تشخیص یکسان بودن محصول در دو کاتالوگ با یک Score و سه Noul همراه.</p></a>
-          <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/consistency_noul_cookbook" target="_blank" rel="noopener"><h4>خودسازگاری</h4><p>سنجش پایداری پاسخ‌ها در اجراهای مکرر و ارجاع مقادیر نامطمئن به بازبینی انسانی.</p></a>
+          <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/consistency_noul_cookbook" target="_blank" rel="noopener"><h4>خودسازگاری: Noul</h4><p>سنجش پایداری پاسخ‌ها در اجراهای مکرر و ارجاع مقادیر نامطمئن به بازبینی انسانی.</p></a>
+          <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/twitch_chat_filter" target="_blank" rel="noopener"><h4>فیلتر چت Twitch</h4><p>پنهان کردن توهین، اسپم و نکته‌های ناخواسته‌ی بازی، محو کردن اسپویلرها و برجسته کردن سوال‌ها؛ هر پیام یک درخواست با چند پرسش و قوانین در کد.</p></a>
+          <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/skill_suggestion" target="_blank" rel="noopener"><h4>پیشنهاد مهارت</h4><p>انتخاب حداکثر یک مهارت برای یک نوبت ایجنت از میان ۱۸۲ مهارت کاتالوگ Hermes با دو درخواست برای رتبه‌بندی و بازبینی نامزدهای برتر.</p></a>
+          <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/basic_memory" target="_blank" rel="noopener"><h4>سیستم حافظه‌ی ساده</h4><p>Jev تصمیم می‌گیرد کدام درخواست‌ها و پاسخ‌ها ارزش به‌خاطر سپردن دارند و یک تابع کوچک خاطره‌ها را به فراخوانی‌های بعدی اضافه می‌کند.</p></a>
+          <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/classification_using_confidence" target="_blank" rel="noopener"><h4>طبقه‌بندی با confidence</h4><p>طبقه‌بندی گزارش‌های سالانه‌ی SEC در ۷۵ گروه صنعتی با یک Choice برای هر کدام و تصمیم بر اساس confidence بین گزارش گروه یا بخش کلان‌تر بالای آن.</p></a>
+          <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/pre_parsed_value_extraction_cookbook" target="_blank" rel="noopener"><h4>استخراج مقدار پیش‌تجزیه‌شده</h4><p>پیدا کردن ایمیل، تلفن و مبلغ‌های نامزد با regex و انتخاب بازه‌ی درخواستی توسط TypeSafe تا کد مقدار را عیناً نرمال کند.</p></a>
+          <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/autoformat" target="_blank" rel="noopener"><h4>بازیابی ساختار</h4><p>بازسازی Markdown از متن ساده‌ای که قالبش را از دست داده، با دو درخواست: یکی خطوط شکسته‌شده را می‌چسباند و دیگری هر بلوک (عنوان، فهرست، کد، callout) را طبقه‌بندی می‌کند.</p></a>
+          <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/consistency_choice_cookbook" target="_blank" rel="noopener"><h4>خودسازگاری: Choice</h4><p>افزودن نتیجه‌ی نامطمئن به تصمیم‌های مدیریت محتوا و مقایسه‌ی توافق برچسب‌ها با سهم اقدام‌های خودکار.</p></a>
+          <a class="mini-card" href="https://docs.typesafe.ai/cookbooks/autoresearch_feature_discovery" target="_blank" rel="noopener"><h4>کشف ویژگی با autoresearch</h4><p>حلقه‌ی autoresearch که پرسش‌های TypeSafe پیشنهاد می‌دهد، متن آزاد را به ویژگی عددی تبدیل می‌کند و با خطاهای مدل یک رگرسور CatBoost نظارت‌شده را بهتر می‌کند.</p></a>
         </div>
+      
       
       
       
@@ -227,14 +238,14 @@
         </ul>
       </div>
       <div class="footer-bottom">
-        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.13.0</code></span>
+        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.14.0</code></span>
         <span>بر اساس مستندات رسمی بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
         <span>ساخته‌شده با Claude · به دستور <a href="https://github.com/arashrasoulzadeh" target="_blank" rel="noopener">آرش رسول‌زاده</a> · <a href="https://github.com/arashrasoulzadeh/jevhub_ir" target="_blank" rel="noopener">کد منبع در GitHub</a></span>
       </div>
     </div>
   </footer>
 
-  <script src="../assets/js/config.js?v=74fcbdd8"></script>
+  <script src="../assets/js/config.js?v=7032d24f"></script>
   <script src="../assets/js/main.js?v=c4847903"></script>
 </body>
 </html>

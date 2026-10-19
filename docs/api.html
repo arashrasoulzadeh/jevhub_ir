@@ -39,7 +39,7 @@
     "headline": "مرجع HTTP API",
     "description": "مرجع کامل endpoint ارزیابی TypeSafe.",
     "inLanguage": "fa",
-    "dateModified": "2026-09-23",
+    "dateModified": "2026-10-20",
     "author": {"@type": "Organization", "name": "جِو هاب"},
     "publisher": {"@type": "Organization", "name": "جِو هاب"},
     "mainEntityOfPage": "https://jevhub.ir/docs/api.html",
@@ -105,6 +105,8 @@
         <a href="choice.html" data-slug="choice">Choice</a>
         <a href="score.html" data-slug="score">Score</a>
         <a href="noul.html" data-slug="noul">Noul</a>
+        <a href="box.html" data-slug="box">Box</a>
+        <a href="images.html" data-slug="images">تصاویر</a>
         <a href="advanced.html" data-slug="advanced">پیشرفته: ساختار</a>
       </div>
       <div class="side-group"><h6>اطمینان</h6>
@@ -140,7 +142,7 @@
         <p>مرجع کامل endpoint ارزیابی TypeSafe.</p>
         <div class="meta-row">
           <span class="update-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>آخرین به‌روزرسانی: <b data-date="docsUpdated"></b></span>
-          <span class="src-link">مدل: <code data-cfg="model">jev-1.13.0</code></span>
+          <span class="src-link">مدل: <code data-cfg="model">jev-1.14.0</code></span>
           <span class="src-link">منبع بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
           <a class="src-link" href="https://docs.typesafe.ai/api" target="_blank" rel="noopener">منبع انگلیسی <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a>
         </div>
@@ -160,6 +162,19 @@ Content-Type: application/json
           <div class="param"><div class="param-head"><span class="param-name">model</span><span class="param-type">string</span></div><p>مدلی که درخواست را پردازش می‌کند. از <code>"jev-latest"</code> استفاده کنید. <a href="models.html">مدل‌ها</a> را ببینید.</p></div>
           <div class="param"><div class="param-head"><span class="param-name">questions</span><span class="param-type">map&lt;string, Question&gt;</span><span class="param-req">الزامی</span></div><p>نگاشتی از اشیای Question تایپ‌شده. کلیدها را خودتان انتخاب می‌کنید و پاسخ‌ها زیر همان کلیدها برمی‌گردند. کلید به مدل فرستاده نمی‌شود و در استنتاج استفاده نمی‌شود.</p></div>
         </div>
+        <h3 id="api-rules">قوانین درخواست</h3>
+        <div class="table-wrap"><table>
+          <thead><tr><th>قانون</th><th>حد</th></tr></thead>
+          <tbody>
+            <tr><td>اندازه‌ی بدنه</td><td>حداکثر ۳۲ MiB (هدرها شمرده نمی‌شوند)</td></tr>
+            <tr><td>کدگذاری</td><td>JSON با UTF-8 و بدون BOM</td></tr>
+            <tr><td>تو در تویی</td><td>حداکثر ۶۴ سطح شیء/آرایه‌ی تو در تو در هر یک از <code>state</code>، <code>instructions</code> و <code>criteria</code>؛ محتوای عمیق‌تر را تخت کنید</td></tr>
+            <tr><td>اعداد</td><td>فقط اعداد متناهی. <code>NaN</code>، <code>Infinity</code> و اعداد بزرگ‌تر از حد نمایش (مثل <code>1e400</code>) رد می‌شوند؛ شناسه‌ها و مقادیر بزرگ دقیق را به‌صورت رشته بفرستید</td></tr>
+          </tbody>
+        </table></div>
+        <p>بدنه‌ی بزرگ‌تر از ۳۲ MiB پاسخ <code>413</code> می‌گیرد؛ نقض قوانین دیگر <code>400</code>.</p>
+        <h3 id="api-compression">فشرده‌سازی</h3>
+        <p>بدنه را می‌توانید با <code>Content-Encoding: gzip</code> (یا <code>x-gzip</code>) یا <code>zstd</code> فشرده کنید. SDKها بدنه‌های ۱ KiB و بزرگ‌تر را در صورت پشتیبانی runtime با zstd فشرده می‌فرستند. فقط یک لایه‌ی فشرده‌سازی بگذارید و پنجره‌ی zstd را حداکثر ۸ MiB نگه دارید. سقف ۳۲ MiB هم برای بدنه‌ی فشرده و هم باز‌شده اعمال می‌شود. <code>Content-Encoding</code> پشتیبانی‌نشده یا بیش از یک لایه <code>415</code> برمی‌گرداند و بدنه‌ی فشرده‌ی خراب <code>400</code>.</p>
         <h3 id="api-questions">انواع Question</h3>
         <p>همه‌ی انواع <code>type</code> و <code>instructions</code> مشترک دارند و هر کدام <code>criteria</code> خودش را اضافه می‌کند. <code>instructions</code> می‌تواند رشته، شیء یا آرایه باشد؛ پرسش را در یک فیلد و داده را در فیلدهای دیگر بگذارید و با نام در بک‌تیک به آن ارجاع دهید.</p>
         <div class="tabs">
@@ -232,6 +247,8 @@ Content-Type: application/json
 </textarea>
           </div>
         </div>
+        <h3 id="api-box">Box و تصاویر (آزمایشی)</h3>
+        <p>نوع <code>box</code> محل چیزی را در یک تصویر پیدا می‌کند و <code>instructions</code> دارد، بدون <code>criteria</code>. تصاویر در نگاشت سطح بالای <code>assets</code> فهرست می‌شوند و با رشته‌ی مرجع در <code>state</code>، <code>instructions</code> یا <code>criteria</code> به کار می‌روند. برای استفاده از تصویر یا Box باید هدر <code>TypeSafe-Danger-Zone-Images: true</code> را بفرستید و برای Box مدل <code>jev-preview</code> (یا <code>jev-1.14.0</code>) لازم است. جزئیات: <a href="images.html">تصاویر</a> و <a href="box.html">Box</a>.</p>
         <h3 id="api-response">بدنه‌ی پاسخ</h3>
         <div class="params">
           <div class="param"><div class="param-head"><span class="param-name">model</span><span class="param-type">string</span></div><p>مدلی که ارزیابی را انجام داده (شناسه‌ی نسخه‌دار).</p></div>
@@ -298,6 +315,7 @@ Content-Type: application/json
       
       
       
+      
       </section>
 
   <div class="pager">
@@ -348,14 +366,14 @@ Content-Type: application/json
         </ul>
       </div>
       <div class="footer-bottom">
-        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.13.0</code></span>
+        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.14.0</code></span>
         <span>بر اساس مستندات رسمی بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
         <span>ساخته‌شده با Claude · به دستور <a href="https://github.com/arashrasoulzadeh" target="_blank" rel="noopener">آرش رسول‌زاده</a> · <a href="https://github.com/arashrasoulzadeh/jevhub_ir" target="_blank" rel="noopener">کد منبع در GitHub</a></span>
       </div>
     </div>
   </footer>
 
-  <script src="../assets/js/config.js?v=74fcbdd8"></script>
+  <script src="../assets/js/config.js?v=7032d24f"></script>
   <script src="../assets/js/main.js?v=c4847903"></script>
 </body>
 </html>

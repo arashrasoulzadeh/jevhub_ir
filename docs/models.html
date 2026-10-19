@@ -39,7 +39,7 @@
     "headline": "مدل‌ها",
     "description": "مدل‌های موجود، قیمت، محدودیت نرخ، طول کانتکست، aliasها و پشتیبانی زبان.",
     "inLanguage": "fa",
-    "dateModified": "2026-09-23",
+    "dateModified": "2026-10-20",
     "author": {"@type": "Organization", "name": "جِو هاب"},
     "publisher": {"@type": "Organization", "name": "جِو هاب"},
     "mainEntityOfPage": "https://jevhub.ir/docs/models.html",
@@ -105,6 +105,8 @@
         <a href="choice.html" data-slug="choice">Choice</a>
         <a href="score.html" data-slug="score">Score</a>
         <a href="noul.html" data-slug="noul">Noul</a>
+        <a href="box.html" data-slug="box">Box</a>
+        <a href="images.html" data-slug="images">تصاویر</a>
         <a href="advanced.html" data-slug="advanced">پیشرفته: ساختار</a>
       </div>
       <div class="side-group"><h6>اطمینان</h6>
@@ -140,7 +142,7 @@
         <p>مدل‌های موجود، قیمت، محدودیت نرخ، طول کانتکست، aliasها و پشتیبانی زبان.</p>
         <div class="meta-row">
           <span class="update-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>آخرین به‌روزرسانی: <b data-date="docsUpdated"></b></span>
-          <span class="src-link">مدل: <code data-cfg="model">jev-1.13.0</code></span>
+          <span class="src-link">مدل: <code data-cfg="model">jev-1.14.0</code></span>
           <span class="src-link">منبع بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
           <a class="src-link" href="https://docs.typesafe.ai/models" target="_blank" rel="noopener">منبع انگلیسی <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a>
         </div>
@@ -150,27 +152,46 @@
                 <p>همه‌ی مدل‌ها از طریق یک endpoint، یعنی <code>POST /v1/systemone</code>، ارائه می‌شوند و فیلد <code>model</code> در درخواست تعیین می‌کند کدام یک پاسخ دهد.</p>
         <h3 id="models-current">مدل‌های فعلی</h3>
         <div class="table-wrap"><table>
-          <thead><tr><th>Jev 1.13</th><th class="ltr" style="text-align:start"><code>jev-1.13.0</code></th></tr></thead>
+          <thead><tr><th></th><th>Jev 1.14</th><th>Jev 1.13</th></tr></thead>
           <tbody>
-            <tr><td>قیمت (به ازای Btok / Mtok)</td><td>۴۲ دلار / ۰٫۰۴۲ دلار</td></tr>
-            <tr><td>محدودیت نرخ</td><td>۲۵۰٬۰۰۰ توکن در ثانیه / ۱٬۲۰۰ درخواست در دقیقه</td></tr>
-            <tr><td>طول کانتکست</td><td>۶۴k توکن برای هر درخواست؛ ۳۲k توکن برای <code>state</code> به‌علاوه‌ی طولانی‌ترین پرسش</td></tr>
-            <tr><td>ورودی</td><td>فقط متن: رشته، شیء JSON یا آرایه‌ای از متن. بدون تصویر، صوت یا ویدئو.</td></tr>
+            <tr><td>شناسه‌ی مدل</td><td class="ltr-cell"><code>jev-1.14.0</code></td><td class="ltr-cell"><code>jev-1.13.0</code></td></tr>
+            <tr><td>قیمت (به ازای Btok / Mtok)</td><td>۴۲ دلار / ۰٫۰۴۲ دلار</td><td>۴۲ دلار / ۰٫۰۴۲ دلار</td></tr>
+            <tr><td>طول کانتکست</td><td>۶۴k برای هر درخواست / ۳۲k برای هر پرسش</td><td>۶۴k برای هر درخواست / ۳۲k برای هر پرسش</td></tr>
+            <tr><td>ورودی</td><td>متن و تصویر (آزمایشی)</td><td>متن و تصویر (آزمایشی)</td></tr>
           </tbody>
         </table></div>
+        <p>Jev 1.14 جدیدترین نسخه‌ی Jev است و از ۱۴ اکتبر ۲۰۲۶ در دسترس است. پرسش‌های <a href="box.html">Box</a> فقط روی Jev 1.14 کار می‌کنند.</p>
         <ul>
-          <li><strong>قیمت:</strong> به ازای هر توکن ورودی محاسبه می‌شود؛ توکن‌های خروجی رایگان‌اند. Btok یک میلیارد و Mtok یک میلیون توکن است.</li>
-          <li><strong>محدودیت نرخ:</strong> درخواستی که از هر کدام بگذرد <code>429 Too Many Requests</code> می‌گیرد. SDKها به‌طور پیش‌فرض با backoff دوباره تلاش می‌کنند و به هدر <code>retry-after</code> احترام می‌گذارند.</li>
-          <li><strong>طول کانتکست:</strong> Jev <code>state</code> را یک بار می‌خواند و هر پرسش را موازی در برابرش ارزیابی می‌کند. بودجه‌ی ۶۴k کل state و همه‌ی پرسش‌ها را پوشش می‌دهد؛ بودجه‌ی ۳۲k برای state به‌علاوه‌ی طولانی‌ترین پرسش است.</li>
-          <li><strong>ورودی:</strong> ورودی‌های غیرمتنی را پیش از ارسال به متن یا فیلدهای ساختاریافته تبدیل کنید.</li>
+          <li><strong>قیمت:</strong> به ازای هر توکن ورودی محاسبه می‌شود؛ توکن‌های خروجی رایگان‌اند. Btok یک میلیارد و Mtok یک میلیون توکن است. تصاویر هم با همان قیمت هر توکن ورودی حساب می‌شوند.</li>
+          <li><strong>طول کانتکست:</strong> دو محدودیت وجود دارد: کانتکست هر درخواست (<code>state</code> به‌علاوه‌ی همه‌ی پرسش‌ها) و کانتکست هر پرسش (<code>state</code> به‌علاوه‌ی یک پرسش). تعداد پرسش‌ها جداگانه محدود نمی‌شود.</li>
+          <li><strong>ورودی:</strong> متن (رشته، شیء JSON یا آرایه‌ای از متن) و <a href="images.html">تصویر PNG/JPEG</a> به‌صورت آزمایشی. صوت و ویدئو پذیرفته نمی‌شوند؛ پیش از ارسال به متن یا فیلدهای ساختاریافته تبدیل کنید.</li>
         </ul>
-        <div class="callout warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><p><strong>محدودیت‌های نرخ به‌صورت پویا تنظیم می‌شوند.</strong> به گفته‌ی TypeSafe به‌دلیل حجم بسیار بالای تقاضا، این محدودیت‌ها ممکن است بدون اطلاع قبلی تغییر کنند. محدودیت‌های بالاتر در پلن‌های سفارشی و سازمانی در دسترس است.</p></div>
+        <h3 id="models-long">کانتکست بلند</h3>
+        <p>کانتکست بلند به‌طور پیش‌فرض خاموش است و روی Jev 1.14 و Jev 1.13 کار می‌کند. برای روشن کردنش در هر درخواستی که لازم دارد هدر <code>TypeSafe-Danger-Zone-Long-Context: true</code> را بفرستید؛ آن‌وقت کانتکست هر درخواست و هر پرسش هر دو ۲۶۲k توکن می‌شود. قیمت هر توکن تغییر نمی‌کند، اما کندتر و کم‌دقت‌تر از ماندن در حدهای پیش‌فرض است؛ فقط برای درخواست‌هایی که واقعاً لازم دارند روشنش کنید.</p>
+<textarea class="code" data-lang="bash" hidden>
+curl https://api.typesafe.ai/v1/systemone \
+  -H "Authorization: Bearer $TYPESAFE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "TypeSafe-Danger-Zone-Long-Context: true" \
+  -d '{
+    "model": "jev-latest",
+    "state": "<a long contract, transcript, or record>",
+    "questions": {
+      "has_termination_clause": {
+        "type": "noul",
+        "instructions": "Does the `state` include a clause that lets either party end the agreement early?"
+      }
+    }
+  }'
+</textarea>
+        <h3 id="models-rate">محدودیت نرخ</h3>
+        <p>محدودیت نرخ برای هر سازمان تنظیم می‌شود و مقدار فعلی سازمان شما در <a href="https://console.typesafe.ai/rate-limits" target="_blank" rel="noopener">کنسول توسعه‌دهنده</a> است. محدودیت‌ها بر حسب توکن در ثانیه و درخواست در ثانیه سنجیده می‌شوند و درخواستی که از هر کدام بگذرد <code>429 Too Many Requests</code> می‌گیرد. SDKها به‌طور پیش‌فرض با backoff دوباره تلاش می‌کنند و به هدر <code>retry-after</code> احترام می‌گذارند. محدودیت‌های بالاتر در پلن‌های سفارشی و سازمانی در دسترس است (<code>sales@typesafe.ai</code>).</p>
         <h3 id="models-aliases">Aliasها</h3>
         <div class="table-wrap"><table>
           <thead><tr><th>Alias</th><th>اشاره به</th><th>معنا</th></tr></thead>
           <tbody>
             <tr><td><code>jev-latest</code></td><td><code>jev-1.13.0</code></td><td>جدیدترین نسخه‌ی پایدار و رسمی. پیش‌فرض SDKها و نامی که مثال‌های مستندات استفاده می‌کنند.</td></tr>
-            <tr><td><code>jev-preview</code></td><td><code>jev-1.13.0</code></td><td>جدیدترین نسخه، چه رسمی چه نه. وقتی بیلد preview موجود باشد جلوتر از <code>jev-latest</code> حرکت می‌کند. در حال حاضر بیلد preview وجود ندارد.</td></tr>
+            <tr><td><code>jev-preview</code></td><td><code>jev-1.14.0</code></td><td>جدیدترین نسخه، چه رسمی چه نه. وقتی بیلد preview موجود باشد جلوتر از <code>jev-latest</code> حرکت می‌کند.</td></tr>
           </tbody>
         </table></div>
         <p>یک alias با انتشار نسخه‌ی جدید جابه‌جا می‌شود، پس پاسخ‌های پشت آن می‌توانند بدون تغییری از سمت شما عوض شوند. فیلد <code>model</code> در پاسخ، شناسه‌ی نسخه‌ای را که پاسخ داده گزارش می‌کند تا بتوانید لاگش کنید. اگر آستانه‌های اطمینان را روی نسخه‌ی مشخصی تنظیم کرده‌اید، به‌جای alias شناسه‌ی آن نسخه را سنجاق کنید.</p>
@@ -186,7 +207,7 @@
         <h3 id="models-data">مدیریت داده</h3>
         <p>Jev روی درخواست‌ها و پاسخ‌های مشتریان آموزش داده نمی‌شود. برای قرارداد پردازش داده، سیاست حریم خصوصی و جزئیات نگه‌داری صفر داده (ZDR) برای مشتریان سازمانی، صفحه‌ی <a href="https://docs.typesafe.ai/legal" target="_blank" rel="noopener">Legal</a> را ببینید.</p>
         <h3 id="models-list">فهرست مدل‌ها</h3>
-        <p><code>GET /v1/models</code> نام‌هایی را که حساب شما می‌تواند در فیلد <code>model</code> بفرستد، همراه با توضیح و تاریخ انتشار برمی‌گرداند. در حال حاضر aliasها را فهرست می‌کند؛ شناسه‌های نسخه‌دار مثل <code>jev-1.13.0</code> چه در فهرست باشند چه نه پذیرفته می‌شوند.</p>
+        <p><code>GET /v1/models</code> نام‌هایی را که حساب شما می‌تواند در فیلد <code>model</code> بفرستد، همراه با توضیح و تاریخ انتشار برمی‌گرداند. در حال حاضر aliasها را فهرست می‌کند؛ شناسه‌های نسخه‌دار مثل <code>jev-1.14.0</code> چه در فهرست باشند چه نه پذیرفته می‌شوند.</p>
         <div class="code-group">
 <textarea class="code" data-lang="bash" data-label="cURL" hidden>
 curl https://api.typesafe.ai/v1/models \
@@ -209,6 +230,7 @@ for (const model of models) {
 }
 </textarea>
         </div>
+      
       
       
       
@@ -274,14 +296,14 @@ for (const model of models) {
         </ul>
       </div>
       <div class="footer-bottom">
-        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.13.0</code></span>
+        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.14.0</code></span>
         <span>بر اساس مستندات رسمی بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
         <span>ساخته‌شده با Claude · به دستور <a href="https://github.com/arashrasoulzadeh" target="_blank" rel="noopener">آرش رسول‌زاده</a> · <a href="https://github.com/arashrasoulzadeh/jevhub_ir" target="_blank" rel="noopener">کد منبع در GitHub</a></span>
       </div>
     </div>
   </footer>
 
-  <script src="../assets/js/config.js?v=74fcbdd8"></script>
+  <script src="../assets/js/config.js?v=7032d24f"></script>
   <script src="../assets/js/main.js?v=c4847903"></script>
 </body>
 </html>

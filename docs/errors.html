@@ -39,7 +39,7 @@
     "headline": "خطاها و محدودیت نرخ",
     "description": "خطاها از کدهای وضعیت استاندارد HTTP با بدنه‌ی JSON توصیفی استفاده می‌کنند.",
     "inLanguage": "fa",
-    "dateModified": "2026-09-23",
+    "dateModified": "2026-10-20",
     "author": {"@type": "Organization", "name": "جِو هاب"},
     "publisher": {"@type": "Organization", "name": "جِو هاب"},
     "mainEntityOfPage": "https://jevhub.ir/docs/errors.html",
@@ -105,6 +105,8 @@
         <a href="choice.html" data-slug="choice">Choice</a>
         <a href="score.html" data-slug="score">Score</a>
         <a href="noul.html" data-slug="noul">Noul</a>
+        <a href="box.html" data-slug="box">Box</a>
+        <a href="images.html" data-slug="images">تصاویر</a>
         <a href="advanced.html" data-slug="advanced">پیشرفته: ساختار</a>
       </div>
       <div class="side-group"><h6>اطمینان</h6>
@@ -140,7 +142,7 @@
         <p>خطاها از کدهای وضعیت استاندارد HTTP با بدنه‌ی JSON توصیفی استفاده می‌کنند.</p>
         <div class="meta-row">
           <span class="update-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>آخرین به‌روزرسانی: <b data-date="docsUpdated"></b></span>
-          <span class="src-link">مدل: <code data-cfg="model">jev-1.13.0</code></span>
+          <span class="src-link">مدل: <code data-cfg="model">jev-1.14.0</code></span>
           <span class="src-link">منبع بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
           <a class="src-link" href="https://docs.typesafe.ai/api#errors" target="_blank" rel="noopener">منبع انگلیسی <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a>
         </div>
@@ -150,7 +152,10 @@
                 <div class="table-wrap"><table>
           <thead><tr><th>وضعیت</th><th>معنا</th></tr></thead>
           <tbody>
+            <tr><td><code>400 Bad Request</code></td><td>بدنه یکی از <a href="api.html#api-rules">قوانین درخواست</a> را نقض می‌کند: UTF-8 نامعتبر، تو در تویی زیاد، عدد نامتناهی یا بدنه‌ی فشرده‌ی خراب. با <code>max_tokens_exceeded</code> یعنی درخواست از طول کانتکست مدل بلندتر است. برای تصاویر هم رد شدن تصویر یا نبودن هدر <code>TypeSafe-Danger-Zone-Images</code> را ببینید.</td></tr>
             <tr><td><code>401 Unauthorized</code></td><td>کلید API موجود نیست یا نامعتبر است. هدر <code>Authorization</code> را بررسی کنید.</td></tr>
+            <tr><td><code>413 Payload Too Large</code></td><td>بدنه بیش از ۳۲ MiB است (برای تصاویر: فایل، ابعاد، مجموع تصاویر یا درخواست باز‌شده از حد گذشته).</td></tr>
+            <tr><td><code>415 Unsupported Media Type</code></td><td><code>Content-Encoding</code> پشتیبانی‌نشده یا بیش از یک لایه‌ی فشرده‌سازی. <a href="api.html#api-compression">فشرده‌سازی</a> را ببینید.</td></tr>
             <tr><td><code>422 Unprocessable Entity</code></td><td>بدنه‌ی درخواست اعتبارسنجی نشد؛ مثلاً فیلد الزامی جا افتاده یا پرسش بدشکل است. بدنه‌ی پاسخ فیلد مشکل‌دار را مشخص می‌کند.</td></tr>
             <tr><td><code>429 Too Many Requests</code></td><td>از محدودیت نرخ گذشته‌اید. کمی صبر کنید و دوباره تلاش کنید.</td></tr>
             <tr><td><code>529 Overloaded</code></td><td>TypeSafe موقتاً پربار است. پس از کمی تأخیر دوباره تلاش کنید.</td></tr>
@@ -173,6 +178,7 @@
           </tbody>
         </table></div>
         <p>در پایتون، <code>TypeSafeAPIError</code> فیلدهای <code>status</code>، <code>body</code>، <code>headers</code>، <code>endpoint</code> و ویژگی <code>request_id</code> (هدر <code>x-typesafe-request-id</code>) دارد.</p>
+      
       
       
       
@@ -238,14 +244,14 @@
         </ul>
       </div>
       <div class="footer-bottom">
-        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.13.0</code></span>
+        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.14.0</code></span>
         <span>بر اساس مستندات رسمی بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
         <span>ساخته‌شده با Claude · به دستور <a href="https://github.com/arashrasoulzadeh" target="_blank" rel="noopener">آرش رسول‌زاده</a> · <a href="https://github.com/arashrasoulzadeh/jevhub_ir" target="_blank" rel="noopener">کد منبع در GitHub</a></span>
       </div>
     </div>
   </footer>
 
-  <script src="../assets/js/config.js?v=74fcbdd8"></script>
+  <script src="../assets/js/config.js?v=7032d24f"></script>
   <script src="../assets/js/main.js?v=c4847903"></script>
 </body>
 </html>

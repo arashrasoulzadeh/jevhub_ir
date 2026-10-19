@@ -39,7 +39,7 @@
     "headline": "SDK پایتون",
     "description": "نصب SDK پایتون TypeSafe و شروع با فراخوانی‌های همگام یا ناهمگام.",
     "inLanguage": "fa",
-    "dateModified": "2026-09-23",
+    "dateModified": "2026-10-20",
     "author": {"@type": "Organization", "name": "جِو هاب"},
     "publisher": {"@type": "Organization", "name": "جِو هاب"},
     "mainEntityOfPage": "https://jevhub.ir/docs/sdk-python.html",
@@ -105,6 +105,8 @@
         <a href="choice.html" data-slug="choice">Choice</a>
         <a href="score.html" data-slug="score">Score</a>
         <a href="noul.html" data-slug="noul">Noul</a>
+        <a href="box.html" data-slug="box">Box</a>
+        <a href="images.html" data-slug="images">تصاویر</a>
         <a href="advanced.html" data-slug="advanced">پیشرفته: ساختار</a>
       </div>
       <div class="side-group"><h6>اطمینان</h6>
@@ -140,7 +142,7 @@
         <p>نصب SDK پایتون TypeSafe و شروع با فراخوانی‌های همگام یا ناهمگام.</p>
         <div class="meta-row">
           <span class="update-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>آخرین به‌روزرسانی: <b data-date="docsUpdated"></b></span>
-          <span class="src-link">مدل: <code data-cfg="model">jev-1.13.0</code></span>
+          <span class="src-link">مدل: <code data-cfg="model">jev-1.14.0</code></span>
           <span class="src-link">منبع بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
           <a class="src-link" href="https://docs.typesafe.ai/sdk/python" target="_blank" rel="noopener">منبع انگلیسی <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a>
         </div>
@@ -153,10 +155,10 @@
 uv add typesafe-sdk
 # یا
 pip install typesafe-sdk
-# اختیاری: پشتیبانی HTTP/2
+# extraهای اختیاری: http2 / pil / zstd
 pip install "typesafe-sdk[http2]"
 </textarea>
-        <p>متغیر محیطی <code>TYPESAFE_API_KEY</code> را تنظیم کنید. آخرین نسخه‌ی بازبینی‌شده‌ی SDK: <code>0.7.3</code> (۲۰۲۶-۱۰-۰۹).</p>
+        <p>متغیر محیطی <code>TYPESAFE_API_KEY</code> را تنظیم کنید. آخرین نسخه‌ی بازبینی‌شده‌ی SDK: <code>0.7.5</code> (۲۰۲۶-۱۰-۱۴). extraهای پشتیبانی‌شده: <code>http2</code> (پشتیبانی HTTP/2)، <code>pil</code> (ارسال تصویر Pillow) و <code>zstd</code> (فشرده‌سازی بدنه‌ی درخواست روی Python ۳٫۱۳ و قدیمی‌تر).</p>
         <div class="code-group">
 <textarea class="code" data-lang="python" data-label="همگام (sync)" hidden>
 from typesafe_sdk import Noul, TypeSafeClient
@@ -216,10 +218,53 @@ client = TypeSafeClient(http_client=httpx2.Client(http2=True))
 limits = httpx2.Limits(max_connections=200, max_keepalive_connections=200, keepalive_expiry=30)
 client = TypeSafeClient(http_client=httpx2.Client(limits=limits))
 </textarea>
+        <h3 id="py-images">تصاویر (آزمایشی)</h3>
+        <p>از نسخه‌ی ۰٫۷٫۵ می‌توانید دارایی‌های رسانه‌ای (فعلاً فقط تصویر) را در درخواست بگذارید. تصاویر «dreamer-ready» هستند و با هدر <code>TypeSafe-Danger-Zone-Images: true</code> فعال می‌شوند؛ جزئیات API در <a href="images.html">تصاویر</a>. درخواست‌های حاوی دارایی به‌صورت <code>multipart/form-data</code> فرستاده می‌شوند و بایت‌های هر دارایی در بخش جداگانه است. دو راه برای ساخت مرجع وجود دارد و می‌شود هر دو را با هم به کار برد:</p>
+<textarea class="code" data-lang="python" data-title="مرجع خودکار: دارایی مستقیم در محتوا" hidden>
+from pathlib import Path
+from typesafe_sdk import Image, Noul, TypeSafeClient
+
+client = TypeSafeClient(headers={"TypeSafe-Danger-Zone-Images": "true"})
+
+result = client.system_one(
+    state=["The customer returned this item:", Image(Path("returned.jpg"))],
+    questions={
+        "same_item": Noul(
+            instructions=["Is it the item in this listing photo?", Image(Path("listing.jpg"))]
+        )
+    },
+)
+</textarea>
+<textarea class="code" data-lang="python" data-title="مرجع خودکار: دارایی در متن با attach_assets" hidden>
+photo = Image(Path("returned.jpg"))
+with client.attach_assets(photo):          # بدون این بلوک، SDK مرجع‌های متنی را به داده‌ی تصویر وصل نمی‌کند
+    result = client.system_one(
+        state=f"The customer says {photo} arrived scratched.",
+        questions={"damaged": Noul(instructions="Is the item damaged?")},
+    )
+</textarea>
+<textarea class="code" data-lang="python" data-title="مرجع نام‌دار" hidden>
+result = client.system_one(
+    state="Inspect this returned product: <product>",
+    questions={"damaged": Noul(instructions="Is the product damaged?")},
+    assets={"<product>": Image(Path("photo.jpg"))},   # از جداکننده‌های متمایز مثل <product> استفاده کنید
+)
+</textarea>
+        <h3 id="py-advanced">استفاده‌ی پیشرفته: کارایی، لاگ و سازگاری رو به جلو</h3>
+        <ul>
+          <li><strong>کلاینت را دوباره استفاده کنید.</strong> ساخت کلاینت جدید یعنی اتصال و handshake تازه.</li>
+          <li><strong>zstd:</strong> کلاینت‌ها بدنه‌های ۱ KiB و بزرگ‌تر را با zstd فشرده می‌کنند. روی Python پیش از ۳٫۱۴ مطمئن شوید نصب است: <code>uv add "typesafe-sdk[zstd]"</code>. آرگومان <code>compression</code> سازنده برای تنظیم یا خاموش کردنش است.</li>
+          <li><strong>aiohttp برای کد async با نرخ بالا:</strong> <code>uv add "httpx-aiohttp[httpx2]"</code> و سپس <code>AsyncTypeSafeClient(http_client=Httpx2AiohttpClient())</code> با <code>from httpx_aiohttp.httpx2 import Httpx2AiohttpClient</code>.</li>
+          <li><strong>یک کلاینت برای هر thread:</strong> <code>TypeSafeClient</code> بین threadها قابل اشتراک است اما زیر بار سنگین pool اتصال گلوگاه می‌شود؛ برای هر thread یک کلاینت بسازید و دوباره استفاده کنید.</li>
+          <li><strong>لاگ:</strong> SDK در لاگر <code>typesafe_sdk</code> می‌نویسد؛ یا <code>TYPESAFE_LOG_LEVEL</code> را (<code>debug</code>، <code>info</code>، <code>warning</code>، <code>error</code> یا <code>off</code>) پیش از import بگذارید. <code>info</code> یک خط خلاصه برای هر درخواست می‌نویسد و <code>debug</code> هدرها و بدنه‌ها را هم. هدرهای محرمانه (authorization، کلیدها، کوکی‌ها و هر هدر با <code>token</code> یا <code>secret</code> در نام) پنهان می‌شوند، اما بدنه‌ی درخواست و پاسخ <strong>پنهان نمی‌شود</strong>.</li>
+          <li><strong>سازگاری رو به جلو:</strong> فیلدهای اضافی درخواست را با <code>extra_body</code> بفرستید، دیکشنری خام برای پرسش بدهید، و پاسخ‌های نوع ناشناخته را با <code>raw_http_response</code> ببینید (SDK برای آن‌ها هشدار لاگ می‌کند و ردشان می‌کند). فیلدهای ناشناخته راه فراری موقت‌اند؛ ارتقای SDK ترجیح دارد.</li>
+        </ul>
         <h3 id="py-changelog">تغییرات اخیر SDK</h3>
         <div class="table-wrap"><table>
           <thead><tr><th>نسخه</th><th>تاریخ</th><th>خلاصه</th></tr></thead>
           <tbody>
+            <tr><td class="ltr-cell">0.7.5</td><td class="ltr-cell">2026-10-14</td><td>فشرده‌سازی بدنه‌ی درخواست با <code>zstd</code> به‌طور پیش‌فرض (APIهای غیررسمی ممکن است فوراً پشتیبانی نکنند)؛ پشتیبانی از <code>Image</code> از بایت خام، مسیر فایل، رشته‌ی base64 و شیء PIL؛ پرسش و پاسخ <code>Box</code>؛ ارجاع دارایی‌ها در متن با <code>attach_assets</code>؛ مستندات راهنمای استفاده به دو صفحه‌ی Basic و Advanced تقسیم شد</td></tr>
+            <tr><td class="ltr-cell">0.7.4</td><td class="ltr-cell">2026-10-09</td><td>اعداد نامتناهی به‌جای توکن‌های JSON نامعتبر به‌صورت رشته سریال می‌شوند</td></tr>
             <tr><td class="ltr-cell">0.7.3</td><td class="ltr-cell">2026-10-09</td><td>رفع کرش کلاینت async هنگام اتصال‌های هم‌زمان TLS با <code>truststore&lt;=0.10.4</code>؛ اعتبارسنجی بیشتر درخواست؛ نگه‌داشتن اتصال‌های pool به‌مدت ۳۰ ثانیه؛ بخش Performance در مستندات</td></tr>
             <tr><td class="ltr-cell">0.7.2</td><td class="ltr-cell">2026-09-26</td><td>افزودن extra با نام <code>http2</code> به بسته</td></tr>
             <tr><td class="ltr-cell">0.7.1</td><td class="ltr-cell">2026-09-21</td><td>اعتبارسنجی زودهنگام کلید API و حذف مقدار آن از خطاهای لاگ‌شده؛ مثال‌های AI gateway</td></tr>
@@ -260,6 +305,7 @@ except TypeSafeAuthenticationError:
 except TypeSafeAPIError as e:
     print(e.status, e.request_id, e.body)
 </textarea>
+      
       
       
       
@@ -325,14 +371,14 @@ except TypeSafeAPIError as e:
         </ul>
       </div>
       <div class="footer-bottom">
-        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.13.0</code></span>
+        <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.14.0</code></span>
         <span>بر اساس مستندات رسمی بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
         <span>ساخته‌شده با Claude · به دستور <a href="https://github.com/arashrasoulzadeh" target="_blank" rel="noopener">آرش رسول‌زاده</a> · <a href="https://github.com/arashrasoulzadeh/jevhub_ir" target="_blank" rel="noopener">کد منبع در GitHub</a></span>
       </div>
     </div>
   </footer>
 
-  <script src="../assets/js/config.js?v=74fcbdd8"></script>
+  <script src="../assets/js/config.js?v=7032d24f"></script>
   <script src="../assets/js/main.js?v=c4847903"></script>
 </body>
 </html>
