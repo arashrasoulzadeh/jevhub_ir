@@ -182,7 +182,7 @@ PAGE = f'''<!doctype html>
       <div class="footer-bottom">
         <span>نسخه‌ی مدل مستندشده: <code data-cfg="model">jev-1.14.0</code></span>
         <span>بر اساس مستندات رسمی بازبینی‌شده در <b data-date="sourceReviewed"></b></span>
-        <span><a href="https://takhfifbazaar.ir" target="_blank" rel="noopener">تخفیف های لحظه ای</a></span>
+        <span><a href="https://takhfifbazaar.ir/?utm_source=jevhub.ir&utm_medium=referral&utm_campaign=footer" target="_blank" rel="noopener">تخفیف های لحظه ای</a></span>
         <span>ساخته‌شده با Claude · به دستور <a href="https://github.com/arashrasoulzadeh" target="_blank" rel="noopener">آرش رسول‌زاده</a> · <a href="https://github.com/arashrasoulzadeh/jevhub_ir" target="_blank" rel="noopener">کد منبع در GitHub</a></span>
       </div>
     </div>
